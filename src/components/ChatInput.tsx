@@ -1,13 +1,15 @@
 import React, { useState, KeyboardEvent } from 'react';
 import { Send, Smile } from 'lucide-react';
 import { EmojiPicker } from './EmojiPicker';
+import { VoiceControls } from './VoiceControls';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   disabled?: boolean;
+  voiceChat?: any;
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false, voiceChat }) => {
   const [message, setMessage] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
@@ -29,6 +31,19 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
     }
   };
 
+  const handleVoiceInput = () => {
+    if (!voiceChat) return;
+    
+    voiceChat.startListening(
+      (transcript: string) => {
+        setMessage(prev => prev + transcript);
+      },
+      (error: string) => {
+        console.error('Voice input error:', error);
+      }
+    );
+  };
+
   return (
     <div className="border-t border-gray-200 bg-white p-4">
       <div className="flex items-end gap-3 max-w-4xl mx-auto">
@@ -47,13 +62,30 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
         </div>
         
         <div className="flex-1 relative">
+          {/* Voice Controls */}
+          {voiceChat && (
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
+              <VoiceControls
+                isListening={voiceChat.isListening}
+                isSpeaking={voiceChat.isSpeaking}
+                isSupported={voiceChat.isSupported}
+                onStartListening={handleVoiceInput}
+                onStopListening={voiceChat.stopListening}
+                onStopSpeaking={voiceChat.stopSpeaking}
+                disabled={disabled}
+              />
+            </div>
+          )}
+          
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type your message here..."
             disabled={disabled}
-            className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`w-full py-3 pr-12 border border-gray-200 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
+              voiceChat ? 'pl-20' : 'px-4'
+            }`}
             rows={1}
             style={{ minHeight: '48px', maxHeight: '120px' }}
           />

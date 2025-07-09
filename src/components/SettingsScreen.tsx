@@ -1,7 +1,12 @@
 import React from 'react';
 import { Volume2, Moon, Bell, Globe, Shield, Palette } from 'lucide-react';
+import { VoiceSettings } from './VoiceSettings';
 
-export const SettingsScreen: React.FC = () => {
+interface SettingsScreenProps {
+  voiceChat?: any;
+}
+
+export const SettingsScreen: React.FC<SettingsScreenProps> = ({ voiceChat }) => {
   return (
     <div className="flex-1 overflow-y-auto p-6">
       <div className="max-w-2xl mx-auto">
@@ -11,6 +16,15 @@ export const SettingsScreen: React.FC = () => {
         </div>
 
         <div className="space-y-6">
+          {/* Voice Settings */}
+          {voiceChat && (
+            <VoiceSettings
+              settings={voiceChat.settings}
+              voices={voiceChat.voices}
+              onUpdateSettings={voiceChat.updateSettings}
+            />
+          )}
+
           {/* Appearance */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center gap-3 mb-4">

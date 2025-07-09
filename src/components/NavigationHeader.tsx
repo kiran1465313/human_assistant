@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Home, Settings, Info } from 'lucide-react';
 import { Screen } from '../types/navigation';
+import { VoiceControls } from './VoiceControls';
 
 interface NavigationHeaderProps {
   currentScreen: Screen;
@@ -8,6 +9,7 @@ interface NavigationHeaderProps {
   onBack: () => void;
   onHome: () => void;
   onNavigate: (screen: Screen) => void;
+  voiceChat: any;
 }
 
 export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
@@ -15,7 +17,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
   canGoBack,
   onBack,
   onHome,
-  onNavigate
+  onNavigate,
+  voiceChat
 }) => {
   const getScreenTitle = (screen: Screen) => {
     switch (screen) {
@@ -65,6 +68,17 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
 
         {/* Navigation Menu */}
         <div className="flex items-center gap-2">
+          {/* Voice Controls */}
+          <VoiceControls
+            isListening={voiceChat.isListening}
+            isSpeaking={voiceChat.isSpeaking}
+            isSupported={voiceChat.isSupported}
+            onStartListening={() => {}}
+            onStopListening={voiceChat.stopListening}
+            onStopSpeaking={voiceChat.stopSpeaking}
+            disabled={true}
+          />
+          
           <button
             onClick={() => onNavigate('settings')}
             className={`p-2 rounded-lg transition-colors ${

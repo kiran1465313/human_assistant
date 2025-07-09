@@ -1,19 +1,36 @@
 import React from 'react';
-import { MessageCircle, Zap, Heart, Brain, ArrowRight } from 'lucide-react';
+import { MessageCircle, Zap, Heart, Brain, ArrowRight, Mic } from 'lucide-react';
 
 interface WelcomeScreenProps {
   onStartChat: (message: string) => void;
   onNavigate: (screen: 'settings' | 'about') => void;
   onPersonalityDemo?: (trait: string) => void;
+  voiceChat?: any;
 }
 
-export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNavigate, onPersonalityDemo }) => {
+export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNavigate, onPersonalityDemo, voiceChat }) => {
   const suggestions = [
     "Tell me a joke to brighten my day",
     "What's the weather like today?",
     "Help me understand a complex topic",
     "Set a reminder for me"
   ];
+
+  const handleVoiceInput = (inputRef: React.RefObject<HTMLInputElement>) => {
+    if (!voiceChat) return;
+    
+    voiceChat.startListening(
+      (transcript: string) => {
+        if (inputRef.current) {
+          inputRef.current.value = transcript;
+          onStartChat(transcript);
+        }
+      },
+      (error: string) => {
+        console.error('Voice input error:', error);
+      }
+    );
+  };
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
@@ -79,25 +96,53 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNav
         {/* Direct Chat Input */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Start chatting right away:</h3>
-          <div className="relative">
+          <div className="relative flex items-center gap-3">
+            {voiceChat && voiceChat.isSupported && (
+              <button
+                onClick={() => {
+                  const input = document.querySelector('input[placeholder*="Type your message"]') as HTMLInputElement;
+                  handleVoiceInput({ current: input });
+                }}
+                disabled={voiceChat.isListening || voiceChat.isSpeaking}
+                className={`p-3 rounded-full transition-all duration-200 ${
+                  voiceChat.isListening
+                    ? 'bg-red-500 text-white animate-pulse'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50'
+                }`}
+                title="Voice input"
+              >
+                <Mic className="w-5 h-5" />
+              </button>
+            )}
+            
             <input
-              type="text"
-              placeholder="Type your message here and press Enter..."
-              className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white shadow-sm"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  const target = e.target as HTMLInputElement;
-                  if (target.value.trim()) {
-                    onStartChat(target.value.trim());
-                    target.value = '';
-                  }
+              ref={(el) => {
+                if (el) {
+                  el.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                      const target = e.target as HTMLInputElement;
+                      if (target.value.trim()) {
+                        onStartChat(target.value.trim());
+                        target.value = '';
+                      }
+                    }
+                  });
                 }
               }}
+              type="text"
+              placeholder="Type your message here and press Enter..."
+              className="flex-1 px-4 py-3 pr-12 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white shadow-sm"
             />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
               <span className="text-sm">Press Enter ↵</span>
             </div>
           </div>
+          
+          {voiceChat && voiceChat.isListening && (
+            <div className="mt-2 text-center text-red-600 text-sm animate-pulse">
+              🎤 Listening... Speak now!
+            </div>
+          )}
         </div>
 
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Try asking me:</h3>

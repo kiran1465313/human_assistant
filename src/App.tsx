@@ -8,10 +8,12 @@ import { SettingsScreen } from './components/SettingsScreen';
 import { AboutScreen } from './components/AboutScreen';
 import { useChat } from './hooks/useChat';
 import { useNavigation } from './hooks/useNavigation';
+import { useVoiceChat } from './hooks/useVoiceChat';
 
 function App() {
   const { messages, isTyping, sendMessage, triggerPersonalityDemo } = useChat();
   const { currentScreen, navigateTo, goBack, goHome, canGoBack } = useNavigation();
+  const voiceChat = useVoiceChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -33,6 +35,17 @@ function App() {
     navigateTo('chat');
     triggerPersonalityDemo(trait);
   };
+
+  // Auto-speak new assistant messages
+  useEffect(() => {
+    if (voiceChat.settings.autoSpeak && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (!lastMessage.isUser && !isTyping) {
+        voiceChat.speak(lastMessage.text);
+      }
+    }
+  }, [messages, isTyping, voiceChat.settings.autoSpeak]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
       {/* Navigation Header */}
@@ -42,18 +55,29 @@ function App() {
         onBack={goBack}
         onHome={goHome}
         onNavigate={navigateTo}
+        voiceChat={voiceChat}
       />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col">
         {currentScreen === 'welcome' && (
-          <WelcomeScreen onStartChat={handleStartChat} onNavigate={navigateTo} onPersonalityDemo={handlePersonalityDemo} />
+          <WelcomeScreen 
+            onStartChat={handleStartChat} 
+            onNavigate={navigateTo} 
+            onPersonalityDemo={handlePersonalityDemo}
+            voiceChat={voiceChat}
+          />
         )}
         
         {currentScreen === 'chat' && (
           <>
             {!hasMessages ? (
-              <WelcomeScreen onStartChat={handleStartChat} onNavigate={navigateTo} onPersonalityDemo={handlePersonalityDemo} />
+              <WelcomeScreen 
+                onStartChat={handleStartChat} 
+                onNavigate={navigateTo} 
+                onPersonalityDemo={handlePersonalityDemo}
+                voiceChat={voiceChat}
+              />
             ) : (
               <div className="flex-1 overflow-y-auto p-4">
                 <div className="max-w-4xl mx-auto">
@@ -70,11 +94,15 @@ function App() {
                 </div>
               </div>
             )}
-            <ChatInput onSendMessage={sendMessage} disabled={isTyping} />
+            <ChatInput 
+              onSendMessage={sendMessage} 
+              disabled={isTyping} 
+              voiceChat={voiceChat}
+            />
           </>
         )}
         
-        {currentScreen === 'settings' && <SettingsScreen />}
+        {currentScreen === 'settings' && <SettingsScreen voiceChat={voiceChat} />}
         
         {currentScreen === 'about' && <AboutScreen />}
       </main>
