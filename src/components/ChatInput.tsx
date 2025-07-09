@@ -1,5 +1,6 @@
 import React, { useState, KeyboardEvent } from 'react';
 import { Send, Smile } from 'lucide-react';
+import { EmojiPicker } from './EmojiPicker';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -8,12 +9,17 @@ interface ChatInputProps {
 
 export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false }) => {
   const [message, setMessage] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const handleSend = () => {
     if (message.trim() && !disabled) {
       onSendMessage(message.trim());
       setMessage('');
     }
+  };
+
+  const handleEmojiSelect = (emoji: string) => {
+    setMessage(prev => prev + emoji);
   };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -26,9 +32,19 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   return (
     <div className="border-t border-gray-200 bg-white p-4">
       <div className="flex items-end gap-3 max-w-4xl mx-auto">
-        <button className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors">
+        <div className="relative">
+          <button 
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+          >
           <Smile className="w-5 h-5" />
         </button>
+          <EmojiPicker 
+            isOpen={showEmojiPicker}
+            onEmojiSelect={handleEmojiSelect}
+            onClose={() => setShowEmojiPicker(false)}
+          />
+        </div>
         
         <div className="flex-1 relative">
           <textarea
