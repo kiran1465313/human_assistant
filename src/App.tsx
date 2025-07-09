@@ -77,15 +77,5 @@ function App() {
     </div>
   );
 }
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Chat Input */}
-      <ChatInput onSendMessage={sendMessage} disabled={isTyping} />
-    </div>
-  );
-}
 
 export default App;
