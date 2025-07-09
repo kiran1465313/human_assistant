@@ -76,6 +76,30 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNav
       </div>
 
       <div className="w-full max-w-2xl">
+        {/* Direct Chat Input */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Start chatting right away:</h3>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Type your message here and press Enter..."
+              className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white shadow-sm"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  const target = e.target as HTMLInputElement;
+                  if (target.value.trim()) {
+                    onStartChat(target.value.trim());
+                    target.value = '';
+                  }
+                }
+              }}
+            />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <span className="text-sm">Press Enter ↵</span>
+            </div>
+          </div>
+        </div>
+
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Try asking me:</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {suggestions.map((suggestion, index) => (
