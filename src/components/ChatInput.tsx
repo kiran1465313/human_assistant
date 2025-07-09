@@ -45,12 +45,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   };
 
   return (
-    <div className="border-t border-gray-200 bg-white p-4">
+    <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 transition-colors duration-300">
       <div className="flex items-end gap-3 max-w-4xl mx-auto">
         <div className="relative">
           <button 
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            className="flex-shrink-0 p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
           <Smile className="w-5 h-5" />
         </button>
@@ -85,7 +85,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
             disabled={disabled}
             className={`w-full py-3 pr-12 border border-gray-200 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
               voiceChat ? 'pl-20' : 'px-4'
-            }`}
+            } dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300`}
             rows={1}
             style={{ minHeight: '48px', maxHeight: '120px' }}
           />

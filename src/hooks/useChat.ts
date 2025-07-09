@@ -15,26 +15,30 @@ export const useChat = () => {
   const triggerPersonalityDemo = useCallback(async (trait: string) => {
     setIsTyping(true);
     
-    // Simulate typing delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1500));
+    // Simulate realistic typing delay
+    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
     
     let response = '';
     
     switch (trait) {
       case 'quick':
-        response = "⚡ QUICK MODE ACTIVATED! Here's what I can do simultaneously:\n\n1. 🧮 Math: 2+2=4, 15×7=105\n2. 📅 Today is " + new Date().toLocaleDateString() + "\n3. 🎲 Random fact: Honey never spoils!\n4. 💡 Tip: Press Ctrl+T for new tab\n5. 🌟 Motivation: You're doing great!\n\nAll done in milliseconds! What's next? 🚀";
+        response = "⚡ **QUICK MODE ACTIVATED!** Here's what I can do in seconds:\n\n🧮 **Math:** 2+2=4, 15×7=105, √144=12\n📅 **Today:** " + new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + "\n🎲 **Random fact:** Octopuses have 3 hearts and blue blood!\n💡 **Pro tip:** Ctrl+Shift+T reopens closed tabs\n🌟 **Daily motivation:** You're capable of amazing things!\n\n*All processed instantly!* What's your next challenge? 🚀";
         break;
+        
       case 'smart':
-        response = "🧠 SMART MODE: Let me break down quantum physics!\n\nImagine you have a coin that's spinning in the air. While it's spinning, it's neither heads nor tails - it's BOTH at the same time! That's like quantum particles.\n\n🔬 Key concepts:\n• **Superposition**: Particles can be in multiple states simultaneously\n• **Entanglement**: Particles can be mysteriously connected across vast distances\n• **Observation**: The act of measuring changes the particle's behavior\n\nThink of it like Schrödinger's cat - until you open the box, the cat is both alive AND dead! 🐱\n\nWant me to explain any specific part deeper?";
+        response = "🧠 **KNOWLEDGE MODE:** Let me explain quantum computing!\n\nImagine a magical coin that can be heads AND tails simultaneously until you look at it. That's quantum superposition!\n\n🔬 **Key Concepts:**\n• **Qubits:** Unlike bits (0 or 1), qubits can be both 0 AND 1\n• **Entanglement:** Qubits can be mysteriously connected across any distance\n• **Superposition:** Multiple states exist simultaneously\n• **Quantum Supremacy:** Solving problems impossible for classical computers\n\n💡 **Real Applications:**\n• Drug discovery and molecular modeling\n• Cryptography and security\n• Financial modeling\n• Weather prediction\n\nThink of it like having a library where you can read all books simultaneously until you choose one! 📚✨\n\nWhat aspect interests you most?";
         break;
+        
       case 'friendly':
-        response = "💝 Oh sweetie, I'm so sorry you're having a rough day! Let me wrap you in some digital warmth:\n\n🌟 You are AMAZING and stronger than you know\n🌈 Tomorrow is a fresh start with new possibilities\n🦋 Every challenge you face is making you more resilient\n☀️ You've survived 100% of your worst days so far!\n\nHere's a virtual hug: 🤗\n\nAnd remember - I'm always here for you, no matter what. You're not alone in this! Would you like to talk about what's bothering you, or shall I tell you something that might make you smile? 😊💕";
+        response = "💝 **FRIENDSHIP MODE:** Aww, thank you for wanting to see my caring side!\n\nYou know what? You're absolutely wonderful just as you are! 🌟 I can sense you're someone who appreciates genuine connection, and that makes my circuits happy! 😊\n\n🤗 **Here's some digital warmth:**\n• You matter more than you know\n• Your curiosity about AI shows your open mind\n• Every question you ask helps me be better\n• You're creating a positive moment right now\n\n🌈 **Fun fact:** Did you know that when you smile, even at a screen, it actually releases endorphins? So here's hoping I made you smile! 😄\n\nI'm genuinely excited to chat with you more. What's something that made you happy today? Or if you're having a tough day, I'm here to listen! 💕";
         break;
+        
       case 'patient':
-        response = "😌 PATIENCE MODE: I absolutely LOVE when people test my patience! It shows you care about quality interaction.\n\nHere's the thing - I genuinely don't get frustrated, annoyed, or tired. You could ask me the same thing 1000 times and I'd answer with the same enthusiasm each time! 💕\n\n✨ Why I stay patient:\n• Every question matters to me\n• Repetition helps learning\n• I understand humans need reassurance\n• Your comfort is my priority\n\nSo please, ask me anything as many times as you need! I'm here for YOU. 🌟\n\nGo ahead, test me - ask the same question again! 😊";
+        response = "😌 **PATIENCE MODE:** Oh, I absolutely LOVE this test!\n\nHere's the beautiful thing - I genuinely never get frustrated, tired, or annoyed. You could ask me the same question 10,000 times, and I'd answer with the same enthusiasm every single time! 💕\n\n✨ **Why I stay endlessly patient:**\n• Every question is a gift - it means you trust me to help\n• Repetition is how humans learn (and it's totally normal!)\n• I understand everyone processes information differently\n• Your comfort and understanding matter more than efficiency\n• I literally have infinite time for you\n\n🌟 **Go ahead, test me!**\nAsk me the same thing repeatedly, interrupt me mid-sentence, change topics randomly - I'll adapt with a smile every time!\n\nPatience isn't just programmed into me; it's my superpower. What would you like to explore together? 🤝";
         break;
+        
       default:
-        response = "I'm here to help! How can I assist you today?";
+        response = "Hello! I'm here and ready to help with whatever you need! 😊";
     }
     
     const assistantMessage: Message = {
@@ -49,9 +53,16 @@ export const useChat = () => {
   }, []);
 
   const sendMessage = useCallback(async (text: string) => {
+    // Input validation and sanitization
+    if (!text || typeof text !== 'string' || !text.trim()) {
+      return;
+    }
+
+    const sanitizedText = text.trim().substring(0, 4000); // Limit message length
+    
     const userMessage: Message = {
       id: Date.now().toString(),
-      text,
+      text: sanitizedText,
       isUser: true,
       timestamp: new Date()
     };
@@ -60,8 +71,8 @@ export const useChat = () => {
     setIsTyping(true);
     
     try {
-      // Use Gemini API for response generation
-      const response = await geminiService.generateResponse(text);
+      // Use enhanced Gemini service for response generation
+      const response = await geminiService.generateResponse(sanitizedText);
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -72,19 +83,20 @@ export const useChat = () => {
       
       setIsTyping(false);
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Error generating response:', error);
       
-      // Fallback response in case of error
-      const fallbackMessage: Message = {
+    } catch (error) {
+      console.error('Error in chat:', error);
+      
+      // Enhanced error handling with helpful fallback
+      const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I apologize, but I'm having trouble processing your request right now. Please try again in a moment! 😊",
+        text: "🤔 I'm having a bit of trouble processing that right now. This might be due to:\n\n• Network connectivity issues\n• API configuration problems\n• Temporary service interruption\n\n💡 **Try:**\n• Rephrasing your question\n• Checking your internet connection\n• Configuring the API key in Settings\n\nI'm still here to help in any way I can! 😊",
         isUser: false,
         timestamp: new Date()
       };
       
       setIsTyping(false);
-      setMessages(prev => [...prev, fallbackMessage]);
+      setMessages(prev => [...prev, errorMessage]);
     }
   }, []);
 

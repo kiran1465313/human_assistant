@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowLeft, Home, Settings, Info } from 'lucide-react';
 import { Screen } from '../types/navigation';
 import { VoiceControls } from './VoiceControls';
+import { useTheme } from '../hooks/useTheme';
 
 interface NavigationHeaderProps {
   currentScreen: Screen;
@@ -10,6 +11,7 @@ interface NavigationHeaderProps {
   onHome: () => void;
   onNavigate: (screen: Screen) => void;
   voiceChat: any;
+  theme: ReturnType<typeof useTheme>;
 }
 
 export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
@@ -18,7 +20,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
   onBack,
   onHome,
   onNavigate,
-  voiceChat
+  voiceChat,
+  theme
 }) => {
   const getScreenTitle = (screen: Screen) => {
     switch (screen) {
@@ -31,14 +34,14 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
   };
 
   return (
-    <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 p-4 sticky top-0 z-10">
+    <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 p-4 sticky top-0 z-10 transition-colors duration-300">
       <div className="max-w-4xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* Back Button */}
           {canGoBack && (
             <button
               onClick={onBack}
-              className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -48,7 +51,7 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
           {currentScreen !== 'welcome' && (
             <button
               onClick={onHome}
-              className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <Home className="w-5 h-5" />
             </button>
@@ -60,8 +63,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
               <span className="text-white font-bold text-sm">HG</span>
             </div>
             <div>
-              <h1 className="font-semibold text-gray-800">{getScreenTitle(currentScreen)}</h1>
-              <p className="text-sm text-gray-600">Created by Kiran</p>
+              <h1 className="font-semibold text-gray-800 dark:text-gray-100">{getScreenTitle(currentScreen)}</h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Created by Kiran</p>
             </div>
           </div>
         </div>
@@ -83,8 +86,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
             onClick={() => onNavigate('settings')}
             className={`p-2 rounded-lg transition-colors ${
               currentScreen === 'settings' 
-                ? 'text-purple-600 bg-purple-50' 
-                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30' 
+                : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             <Settings className="w-5 h-5" />
@@ -94,8 +97,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
             onClick={() => onNavigate('about')}
             className={`p-2 rounded-lg transition-colors ${
               currentScreen === 'about' 
-                ? 'text-purple-600 bg-purple-50' 
-                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30' 
+                : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             <Info className="w-5 h-5" />

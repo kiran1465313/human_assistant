@@ -9,11 +9,13 @@ import { AboutScreen } from './components/AboutScreen';
 import { useChat } from './hooks/useChat';
 import { useNavigation } from './hooks/useNavigation';
 import { useVoiceChat } from './hooks/useVoiceChat';
+import { useTheme } from './hooks/useTheme';
 
 function App() {
   const { messages, isTyping, sendMessage, triggerPersonalityDemo } = useChat();
   const { currentScreen, navigateTo, goBack, goHome, canGoBack } = useNavigation();
   const voiceChat = useVoiceChat();
+  const theme = useTheme();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -47,7 +49,7 @@ function App() {
   }, [messages, isTyping, voiceChat.settings.autoSpeak]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 flex flex-col transition-colors duration-300">
       {/* Navigation Header */}
       <NavigationHeader
         currentScreen={currentScreen}
@@ -56,6 +58,7 @@ function App() {
         onHome={goHome}
         onNavigate={navigateTo}
         voiceChat={voiceChat}
+        theme={theme}
       />
 
       {/* Main Content */}
@@ -66,6 +69,7 @@ function App() {
             onNavigate={navigateTo} 
             onPersonalityDemo={handlePersonalityDemo}
             voiceChat={voiceChat}
+            theme={theme}
           />
         )}
         
@@ -77,6 +81,7 @@ function App() {
                 onNavigate={navigateTo} 
                 onPersonalityDemo={handlePersonalityDemo}
                 voiceChat={voiceChat}
+                theme={theme}
               />
             ) : (
               <div className="flex-1 overflow-y-auto p-4">
@@ -102,9 +107,9 @@ function App() {
           </>
         )}
         
-        {currentScreen === 'settings' && <SettingsScreen voiceChat={voiceChat} />}
+        {currentScreen === 'settings' && <SettingsScreen voiceChat={voiceChat} theme={theme} />}
         
-        {currentScreen === 'about' && <AboutScreen />}
+        {currentScreen === 'about' && <AboutScreen theme={theme} />}
       </main>
     </div>
   );

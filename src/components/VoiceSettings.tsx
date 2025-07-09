@@ -14,18 +14,18 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
   onUpdateSettings
 }) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition-colors duration-300">
       <div className="flex items-center gap-3 mb-4">
         <Volume2 className="w-6 h-6 text-indigo-500" />
-        <h3 className="text-lg font-semibold text-gray-800">Voice Settings</h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Voice Settings</h3>
       </div>
       
       <div className="space-y-4">
         {/* Enable Voice */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium text-gray-700">Enable Voice Features</p>
-            <p className="text-sm text-gray-500">Turn on voice input and output</p>
+            <p className="font-medium text-gray-700 dark:text-gray-300">Enable Voice Features</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Turn on voice input and output</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input 
@@ -34,15 +34,15 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
               onChange={(e) => onUpdateSettings({ enabled: e.target.checked })}
               className="sr-only peer" 
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+            <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
           </label>
         </div>
 
         {/* Auto Speak */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium text-gray-700">Auto Speak Responses</p>
-            <p className="text-sm text-gray-500">Automatically read AI responses aloud</p>
+            <p className="font-medium text-gray-700 dark:text-gray-300">Auto Speak Responses</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Automatically read AI responses aloud</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input 
@@ -52,13 +52,13 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
               disabled={!settings.enabled}
               className="sr-only peer" 
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600 peer-disabled:opacity-50"></div>
+            <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600 peer-disabled:opacity-50"></div>
           </label>
         </div>
 
         {/* Voice Selection */}
         <div>
-          <label className="block font-medium text-gray-700 mb-2">Voice</label>
+          <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">Voice</label>
           <select
             value={settings.voice?.name || ''}
             onChange={(e) => {
@@ -66,7 +66,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
               onUpdateSettings({ voice: selectedVoice || null });
             }}
             disabled={!settings.enabled}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50"
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 bg-white dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300"
           >
             <option value="">Select a voice</option>
             {voices.map((voice) => (
@@ -79,7 +79,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
 
         {/* Speed Control */}
         <div>
-          <label className="block font-medium text-gray-700 mb-2">
+          <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
             Speech Rate: {settings.rate.toFixed(1)}x
           </label>
           <input
@@ -90,13 +90,13 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             value={settings.rate}
             onChange={(e) => onUpdateSettings({ rate: parseFloat(e.target.value) })}
             disabled={!settings.enabled}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
+            className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
           />
         </div>
 
         {/* Pitch Control */}
         <div>
-          <label className="block font-medium text-gray-700 mb-2">
+          <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
             Pitch: {settings.pitch.toFixed(1)}
           </label>
           <input
@@ -107,13 +107,13 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             value={settings.pitch}
             onChange={(e) => onUpdateSettings({ pitch: parseFloat(e.target.value) })}
             disabled={!settings.enabled}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
+            className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
           />
         </div>
 
         {/* Volume Control */}
         <div>
-          <label className="block font-medium text-gray-700 mb-2">
+          <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
             Volume: {Math.round(settings.volume * 100)}%
           </label>
           <input
@@ -124,7 +124,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             value={settings.volume}
             onChange={(e) => onUpdateSettings({ volume: parseFloat(e.target.value) })}
             disabled={!settings.enabled}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
+            className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
           />
         </div>
 
@@ -141,7 +141,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             }
           }}
           disabled={!settings.enabled || !settings.voice}
-          className="w-full bg-indigo-500 hover:bg-indigo-600 disabled:bg-gray-300 text-white py-2 px-4 rounded-lg transition-colors"
+          className="w-full bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors"
         >
           Test Voice
         </button>

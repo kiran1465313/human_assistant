@@ -24,11 +24,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isUser, times
         <div className={`px-4 py-3 rounded-2xl ${
           isUser 
             ? 'bg-blue-500 text-white rounded-br-md' 
-            : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-md'
+            : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-sm border border-gray-100 dark:border-gray-700 rounded-bl-md transition-colors duration-300'
         }`}>
           <p className="text-sm leading-relaxed whitespace-pre-wrap">{message}</p>
         </div>
-        <span className="text-xs text-gray-400 mt-1 px-1">
+        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 px-1">
           {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
       </div>

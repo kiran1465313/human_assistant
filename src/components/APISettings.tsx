@@ -1,40 +1,119 @@
 import React, { useState, useEffect } from 'react';
-import { Key, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Key, CheckCircle, XCircle, AlertCircle, RefreshCw, Eye, EyeOff, Shield } from 'lucide-react';
+import { geminiService } from '../services/geminiService';
 
 export const APISettings: React.FC = () => {
   const [apiKey, setApiKey] = useState('');
   const [isValidKey, setIsValidKey] = useState<boolean | null>(null);
   const [showKey, setShowKey] = useState(false);
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
+  const [testResult, setTestResult] = useState<string>('');
 
   useEffect(() => {
     // Load saved API key from localStorage
     const savedKey = localStorage.getItem('gemini_api_key');
     if (savedKey) {
       setApiKey(savedKey);
-      setIsValidKey(true);
+      const status = geminiService.getAPIStatus();
+      setIsValidKey(status.configured);
     }
   }, []);
 
-  const handleSaveKey = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem('gemini_api_key', apiKey.trim());
-      // Set environment variable for the session
-      (window as any).VITE_GEMINI_API_KEY = apiKey.trim();
-      setIsValidKey(true);
+  const handleSaveKey = async () => {
+    if (!apiKey.trim()) {
+      setTestResult('❌ Please enter an API key');
+      return;
+    }
+
+    console.log('API Key length:', apiKey.length);
+    console.log('API Key starts with AIza:', apiKey.startsWith('AIza'));
+    
+    // More flexible format validation
+    if (!apiKey.startsWith('AIza')) {
+      setTestResult('❌ Invalid API key format. Google API keys must start with "AIza".');
+      setIsValidKey(false);
+      return;
+    }
+    
+    if (apiKey.length < 30 || apiKey.length > 50) {
+      setTestResult('❌ Invalid API key length. Please check your key and try again.');
+      setIsValidKey(false);
+      return;
+    }
+
+    setIsTestingConnection(true);
+    setTestResult('🔄 Testing API connection...');
+
+    try {
+      console.log('Updating API key in service...');
+      // Update the API key in the service
+      const updateSuccess = geminiService.updateAPIKey(apiKey.trim());
       
-      // Reload the page to reinitialize the Gemini service
-      window.location.reload();
+      if (!updateSuccess) {
+        console.log('Failed to update API key in service');
+        setTestResult('❌ Failed to configure API key');
+        setIsValidKey(false);
+        setIsTestingConnection(false);
+        return;
+      }
+
+      console.log('Testing connection...');
+      // Test the connection
+      const connectionTest = await geminiService.testConnection();
+      console.log('Connection test result:', connectionTest);
+      
+      if (connectionTest.success) {
+        setIsValidKey(true);
+        setTestResult(connectionTest.message);
+        
+        // Show success message and reload after delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        setIsValidKey(false);
+        setTestResult(connectionTest.message);
+      }
+    } catch (error) {
+      console.error('Error in handleSaveKey:', error);
+      setIsValidKey(false);
+      setTestResult('❌ Connection test failed. Please verify your API key.');
+    } finally {
+      setIsTestingConnection(false);
     }
   };
 
   const handleRemoveKey = () => {
-    localStorage.removeItem('gemini_api_key');
-    setApiKey('');
-    setIsValidKey(null);
-    delete (window as any).VITE_GEMINI_API_KEY;
-    
-    // Reload the page to reinitialize the service
-    window.location.reload();
+    if (window.confirm('Are you sure you want to remove the API key? This will disable advanced AI responses.')) {
+      geminiService.removeAPIKey();
+      setApiKey('');
+      setIsValidKey(null);
+      setTestResult('');
+      
+      // Reload to reset the application state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    if (!isValidKey) {
+      setTestResult('❌ Please save a valid API key first');
+      return;
+    }
+
+    setIsTestingConnection(true);
+    setTestResult('🔄 Testing connection...');
+
+    try {
+      const result = await geminiService.testConnection();
+      setTestResult(result.message);
+    } catch (error) {
+      setTestResult('❌ Connection test failed');
+    } finally {
+      setIsTestingConnection(false);
+    }
   };
 
   const getStatusIcon = () => {
@@ -48,44 +127,61 @@ export const APISettings: React.FC = () => {
 
   const getStatusText = () => {
     if (isValidKey === true) {
-      return "API key configured - Advanced AI responses enabled! 🚀";
+      return "🚀 Advanced AI responses enabled!";
     } else if (isValidKey === false) {
-      return "Invalid API key - Please check and try again";
+      return "❌ API key issue - Please check and try again";
     }
-    return "No API key configured - Using basic responses";
+    return "⚠️ No API key configured - Using basic responses";
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition-colors duration-300">
       <div className="flex items-center gap-3 mb-4">
         <Key className="w-6 h-6 text-indigo-500" />
-        <h3 className="text-lg font-semibold text-gray-800">AI API Configuration</h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Google Gemini API Configuration</h3>
       </div>
       
       <div className="space-y-4">
-        {/* Status */}
-        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+        {/* Status Display */}
+        <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors duration-300">
           {getStatusIcon()}
-          <span className="text-sm text-gray-700">{getStatusText()}</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300">{getStatusText()}</span>
         </div>
 
-        {/* Instructions */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="font-medium text-blue-800 mb-2">🚀 Enable Advanced AI Responses</h4>
-          <p className="text-sm text-blue-700 mb-3">
-            To unlock unlimited AI capabilities, get a free Google Gemini API key:
+        {/* Security Notice */}
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors duration-300">
+          <div className="flex items-start gap-3">
+            <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-2">🔒 Security & Privacy</h4>
+              <ul className="text-sm text-blue-700 dark:text-blue-400 space-y-1">
+                <li>• Your API key is stored locally and never shared</li>
+                <li>• All API calls are made securely from your browser</li>
+                <li>• No conversation data is stored on external servers</li>
+                <li>• You can remove your key at any time</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Setup Instructions */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 transition-colors duration-300">
+          <h4 className="font-medium text-purple-800 dark:text-purple-300 mb-2">🚀 Get Your Free API Key</h4>
+          <p className="text-sm text-purple-700 dark:text-purple-400 mb-3">
+            Enable unlimited AI capabilities with Google's free Gemini API:
           </p>
-          <ol className="text-sm text-blue-700 space-y-1 ml-4 list-decimal">
-            <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-800">Google AI Studio</a></li>
+          <ol className="text-sm text-purple-700 dark:text-purple-400 space-y-1 ml-4 list-decimal">
+            <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline hover:text-purple-800 dark:hover:text-purple-300 font-medium">Google AI Studio</a></li>
             <li>Sign in with your Google account</li>
-            <li>Click "Create API Key"</li>
-            <li>Copy the key and paste it below</li>
+            <li>Click "Create API Key" → "Create API key in new project"</li>
+            <li>Copy the generated key (starts with "AIza...")</li>
+            <li>Paste it below and click "Save & Test"</li>
           </ol>
         </div>
 
         {/* API Key Input */}
         <div>
-          <label className="block font-medium text-gray-700 mb-2">
+          <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
             Google Gemini API Key
           </label>
           <div className="flex gap-2">
@@ -94,49 +190,117 @@ export const APISettings: React.FC = () => {
                 type={showKey ? "text" : "password"}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your Gemini API key..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="AIza... (paste your Gemini API key here)"
+                className="w-full p-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300"
+                disabled={isTestingConnection}
               />
               <button
                 type="button"
                 onClick={() => setShowKey(!showKey)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                disabled={isTestingConnection}
               >
-                {showKey ? "Hide" : "Show"}
+                {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
             <button
               onClick={handleSaveKey}
-              disabled={!apiKey.trim()}
-              className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 disabled:bg-gray-300 text-white rounded-lg transition-colors"
+              disabled={!apiKey.trim() || isTestingConnection}
+              className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
             >
-              Save
+              {isTestingConnection ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Testing...
+                </>
+              ) : (
+                'Save & Test'
+              )}
             </button>
           </div>
         </div>
 
-        {/* Remove Key Button */}
-        {isValidKey && (
-          <button
-            onClick={handleRemoveKey}
-            className="w-full p-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg border border-red-200 transition-colors"
-          >
-            Remove API Key
-          </button>
+        {/* Test Result */}
+        {testResult && (
+          <div className={`p-3 rounded-lg text-sm ${
+            testResult.includes('✅') || testResult.includes('successful') 
+              ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800' 
+              : testResult.includes('❌') || testResult.includes('failed')
+              ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
+              : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
+          } transition-colors duration-300`}>
+            {testResult}
+          </div>
         )}
 
-        {/* Features */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100 p-4">
-          <h4 className="font-medium text-purple-800 mb-2">✨ With API Key Enabled:</h4>
-          <ul className="text-sm text-purple-700 space-y-1">
-            <li>• Unlimited questions and topics</li>
-            <li>• Real-time knowledge and information</li>
-            <li>• Advanced programming help</li>
-            <li>• Creative writing and brainstorming</li>
-            <li>• Complex problem solving</li>
-            <li>• Multi-language support</li>
-          </ul>
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          {isValidKey && (
+            <>
+              <button
+                onClick={handleTestConnection}
+                disabled={isTestingConnection}
+                className="flex-1 p-3 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800 transition-colors flex items-center justify-center gap-2"
+              >
+                <RefreshCw className={`w-4 h-4 ${isTestingConnection ? 'animate-spin' : ''}`} />
+                Test Connection
+              </button>
+              
+              <button
+                onClick={handleRemoveKey}
+                className="flex-1 p-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800 transition-colors"
+              >
+                Remove API Key
+              </button>
+            </>
+          )}
         </div>
+
+        {/* Features Preview */}
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg border border-green-100 dark:border-green-800 p-4 transition-colors duration-300">
+          <h4 className="font-medium text-green-800 dark:text-green-300 mb-2">✨ With API Key Enabled:</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-green-700 dark:text-green-400">
+            <div>• Unlimited conversations</div>
+            <div>• Real-time knowledge</div>
+            <div>• Advanced programming help</div>
+            <div>• Creative writing assistance</div>
+            <div>• Complex problem solving</div>
+            <div>• Multi-language support</div>
+          </div>
+        </div>
+
+        {/* Deployment Instructions */}
+        <details className="bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 transition-colors duration-300">
+          <summary className="p-4 cursor-pointer font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg">
+            🚀 Production Deployment Instructions
+          </summary>
+          <div className="p-4 pt-0 space-y-3 text-sm text-gray-600 dark:text-gray-400">
+            <div>
+              <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Vercel:</h5>
+              <code className="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">
+                Dashboard → Project → Settings → Environment Variables → Add VITE_GEMINI_API_KEY
+              </code>
+            </div>
+            <div>
+              <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Netlify:</h5>
+              <code className="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">
+                Site Settings → Environment Variables → Add VITE_GEMINI_API_KEY
+              </code>
+            </div>
+            <div>
+              <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Railway:</h5>
+              <code className="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">
+                Project → Variables → Add VITE_GEMINI_API_KEY
+              </code>
+            </div>
+            <div>
+              <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Heroku:</h5>
+              <code className="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">
+                heroku config:set VITE_GEMINI_API_KEY=your_key_here
+              </code>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
   );
