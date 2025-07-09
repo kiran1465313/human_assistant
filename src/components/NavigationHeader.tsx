@@ -19,11 +19,11 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
 }) => {
   const getScreenTitle = (screen: Screen) => {
     switch (screen) {
-      case 'welcome': return 'AI Assistant';
+      case 'welcome': return 'Hello Guys';
       case 'chat': return 'Chat';
       case 'settings': return 'Settings';
       case 'about': return 'About';
-      default: return 'AI Assistant';
+      default: return 'Hello Guys';
     }
   };
 
@@ -54,11 +54,11 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
           {/* Logo and Title */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">AI</span>
+              <span className="text-white font-bold text-sm">HG</span>
             </div>
             <div>
               <h1 className="font-semibold text-gray-800">{getScreenTitle(currentScreen)}</h1>
-              <p className="text-sm text-gray-600">Always here to help</p>
+              <p className="text-sm text-gray-600">Created by Kiran</p>
             </div>
           </div>
         </div>

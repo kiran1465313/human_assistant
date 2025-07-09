@@ -7,7 +7,7 @@ export const SettingsScreen: React.FC = () => {
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Settings</h2>
-          <p className="text-gray-600">Customize your AI assistant experience</p>
+          <p className="text-gray-600">Customize your Hello Guys experience</p>
         </div>
 
         <div className="space-y-6">

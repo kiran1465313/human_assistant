@@ -118,7 +118,7 @@ export const useChat = () => {
     
     // Questions about the assistant
     if (lowerMessage.includes('who are you') || lowerMessage.includes('what are you')) {
-      return "I'm your friendly AI assistant! I'm designed to be helpful, patient, and understanding - kind of like having a knowledgeable friend who's always ready to chat. I can help with questions, explanations, jokes, and just friendly conversation. What would you like to know about me?";
+      return "I'm Hello Guys, your friendly AI assistant created by Kiran! I'm designed to be helpful, patient, and understanding - kind of like having a knowledgeable friend who's always ready to chat. I can help with questions, explanations, jokes, and just friendly conversation. What would you like to know about me?";
     }
     
     // Default responses for general conversation

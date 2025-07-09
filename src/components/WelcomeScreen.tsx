@@ -22,7 +22,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNav
           <MessageCircle className="w-10 h-10 text-white" />
         </div>
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
-          Hi there! I'm your AI Assistant
+          Hi there! I'm Hello Guys
         </h1>
         <p className="text-gray-600 text-lg max-w-md">
           I'm here to help you with anything you need — from answering questions to having friendly conversations. How can I assist you today?

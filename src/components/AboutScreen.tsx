@@ -7,23 +7,24 @@ export const AboutScreen: React.FC = () => {
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 mx-auto">
-            <span className="text-white font-bold text-2xl">AI</span>
+            <span className="text-white font-bold text-lg">HG</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">AI Assistant</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Hello Guys</h2>
           <p className="text-gray-600">Version 1.0.0</p>
+          <p className="text-sm text-gray-500 mt-1">Created with ❤️ by Kiran</p>
         </div>
 
         <div className="space-y-6">
           {/* About */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">About This Assistant</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">About Hello Guys</h3>
             <p className="text-gray-600 leading-relaxed mb-4">
-              I'm your friendly AI assistant, designed to help you with a wide variety of tasks. 
+              I'm Hello Guys, your friendly AI assistant, designed to help you with a wide variety of tasks. 
               From answering questions and providing explanations to having casual conversations 
               and sharing jokes, I'm here to make your day better and more productive.
             </p>
             <p className="text-gray-600 leading-relaxed">
-              Built with modern web technologies and designed with user experience in mind, 
+              Crafted by Kiran with modern web technologies and designed with user experience in mind, 
               I aim to provide helpful, accurate, and engaging interactions that feel natural and human-like.
             </p>
           </div>
