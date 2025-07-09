@@ -1,11 +1,12 @@
 import React from 'react';
-import { MessageCircle, Zap, Heart, Brain } from 'lucide-react';
+import { MessageCircle, Zap, Heart, Brain, ArrowRight } from 'lucide-react';
 
 interface WelcomeScreenProps {
   onStartChat: (message: string) => void;
+  onNavigate: (screen: 'settings' | 'about') => void;
 }
 
-export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat }) => {
+export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNavigate }) => {
   const suggestions = [
     "Tell me a joke to brighten my day",
     "What's the weather like today?",
@@ -74,6 +75,25 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat }) => 
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Quick Navigation */}
+      <div className="mt-8 flex gap-4 justify-center">
+        <button
+          onClick={() => onNavigate('settings')}
+          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 transition-colors text-gray-700 hover:text-gray-900"
+        >
+          Settings
+          <ArrowRight className="w-4 h-4" />
+        </button>
+        
+        <button
+          onClick={() => onNavigate('about')}
+          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 transition-colors text-gray-700 hover:text-gray-900"
+        >
+          About
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
