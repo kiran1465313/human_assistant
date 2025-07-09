@@ -1,6 +1,7 @@
 import React from 'react';
 import { Volume2, Moon, Bell, Globe, Shield, Palette } from 'lucide-react';
 import { VoiceSettings } from './VoiceSettings';
+import { APISettings } from './APISettings';
 
 interface SettingsScreenProps {
   voiceChat?: any;
@@ -16,6 +17,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ voiceChat }) => 
         </div>
 
         <div className="space-y-6">
+          {/* API Settings */}
+          <APISettings />
+
           {/* Voice Settings */}
           {voiceChat && (
             <VoiceSettings
