@@ -10,7 +10,7 @@ import { useChat } from './hooks/useChat';
 import { useNavigation } from './hooks/useNavigation';
 
 function App() {
-  const { messages, isTyping, sendMessage } = useChat();
+  const { messages, isTyping, sendMessage, triggerPersonalityDemo } = useChat();
   const { currentScreen, navigateTo, goBack, goHome, canGoBack } = useNavigation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -29,6 +29,10 @@ function App() {
     sendMessage(message);
   };
 
+  const handlePersonalityDemo = (trait: string) => {
+    navigateTo('chat');
+    triggerPersonalityDemo(trait);
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
       {/* Navigation Header */}
@@ -43,13 +47,13 @@ function App() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col">
         {currentScreen === 'welcome' && (
-          <WelcomeScreen onStartChat={handleStartChat} onNavigate={navigateTo} />
+          <WelcomeScreen onStartChat={handleStartChat} onNavigate={navigateTo} onPersonalityDemo={handlePersonalityDemo} />
         )}
         
         {currentScreen === 'chat' && (
           <>
             {!hasMessages ? (
-              <WelcomeScreen onStartChat={handleStartChat} onNavigate={navigateTo} />
+              <WelcomeScreen onStartChat={handleStartChat} onNavigate={navigateTo} onPersonalityDemo={handlePersonalityDemo} />
             ) : (
               <div className="flex-1 overflow-y-auto p-4">
                 <div className="max-w-4xl mx-auto">

@@ -4,9 +4,10 @@ import { MessageCircle, Zap, Heart, Brain, ArrowRight } from 'lucide-react';
 interface WelcomeScreenProps {
   onStartChat: (message: string) => void;
   onNavigate: (screen: 'settings' | 'about') => void;
+  onPersonalityDemo?: (trait: string) => void;
 }
 
-export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNavigate }) => {
+export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNavigate, onPersonalityDemo }) => {
   const suggestions = [
     "Tell me a joke to brighten my day",
     "What's the weather like today?",
@@ -14,16 +15,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNav
     "Set a reminder for me"
   ];
 
-  const handlePersonalityDemo = (trait: string) => {
-    const demoMessages = {
-      'quick': "Show me how quickly you can help with multiple tasks at once!",
-      'smart': "Explain quantum physics in simple terms that anyone can understand",
-      'friendly': "I'm having a tough day, can you cheer me up with something positive?",
-      'patient': "I'm going to ask you the same question multiple times to test your patience"
-    };
-    
-    onStartChat(demoMessages[trait as keyof typeof demoMessages]);
-  };
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
       <div className="mb-8">
@@ -40,7 +31,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNav
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full mb-8">
         <button 
-          onClick={() => handlePersonalityDemo('quick')}
+          onClick={() => onPersonalityDemo?.('quick')}
           className="flex items-center gap-3 p-4 bg-white hover:bg-gradient-to-r hover:from-yellow-50 hover:to-orange-50 rounded-xl shadow-sm border border-gray-100 hover:border-yellow-200 transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
         >
           <Zap className="w-6 h-6 text-yellow-500" />
@@ -51,7 +42,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNav
         </button>
         
         <button 
-          onClick={() => handlePersonalityDemo('friendly')}
+          onClick={() => onPersonalityDemo?.('friendly')}
           className="flex items-center gap-3 p-4 bg-white hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 rounded-xl shadow-sm border border-gray-100 hover:border-red-200 transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
         >
           <Heart className="w-6 h-6 text-red-500" />
@@ -62,7 +53,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNav
         </button>
         
         <button 
-          onClick={() => handlePersonalityDemo('smart')}
+          onClick={() => onPersonalityDemo?.('smart')}
           className="flex items-center gap-3 p-4 bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 rounded-xl shadow-sm border border-gray-100 hover:border-blue-200 transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
         >
           <Brain className="w-6 h-6 text-blue-500" />
@@ -73,7 +64,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNav
         </button>
         
         <button 
-          onClick={() => handlePersonalityDemo('patient')}
+          onClick={() => onPersonalityDemo?.('patient')}
           className="flex items-center gap-3 p-4 bg-white hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 rounded-xl shadow-sm border border-gray-100 hover:border-green-200 transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
         >
           <MessageCircle className="w-6 h-6 text-green-500" />
