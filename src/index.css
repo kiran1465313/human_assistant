@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Theme-specific styles */
+.pastel-cute {
+  --primary-color: #ec4899;
+  --secondary-color: #3b82f6;
+  --accent-color: #10b981;
+}
+
+.sci-fi-pet {
+  --primary-color: #3b82f6;
+  --secondary-color: #8b5cf6;
+  --accent-color: #06b6d4;
+}
+
+.nature-spirit {
+  --primary-color: #059669;
+  --secondary-color: #d97706;
+  --accent-color: #0ea5e9;
+}
+
+/* Custom scrollbar for themes */
+.pastel-cute ::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #ec4899, #3b82f6);
+}
+
+.sci-fi-pet ::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+}
+
+.nature-spirit ::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #059669, #d97706);
+}

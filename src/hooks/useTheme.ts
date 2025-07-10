@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark' | 'pastel-cute' | 'sci-fi-pet' | 'nature-spirit';
 
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -22,10 +22,18 @@ export const useTheme = () => {
   useEffect(() => {
     const root = document.documentElement;
     
+    // Remove all theme classes
+    root.classList.remove('dark', 'pastel-cute', 'sci-fi-pet', 'nature-spirit');
+    
+    // Add current theme class
     if (theme === 'dark') {
       root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
+    } else if (theme === 'pastel-cute') {
+      root.classList.add('pastel-cute');
+    } else if (theme === 'sci-fi-pet') {
+      root.classList.add('sci-fi-pet');
+    } else if (theme === 'nature-spirit') {
+      root.classList.add('nature-spirit');
     }
     
     // Save to localStorage
@@ -49,17 +57,45 @@ export const useTheme = () => {
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    setTheme(prev => {
+      switch (prev) {
+        case 'light': return 'dark';
+        case 'dark': return 'pastel-cute';
+        case 'pastel-cute': return 'sci-fi-pet';
+        case 'sci-fi-pet': return 'nature-spirit';
+        case 'nature-spirit': return 'light';
+        default: return 'light';
+      }
+    });
+  }, []);
+
+  const setThemeDirectly = useCallback((newTheme: Theme) => {
+    setTheme(newTheme);
   }, []);
 
   const setLightTheme = useCallback(() => setTheme('light'), []);
   const setDarkTheme = useCallback(() => setTheme('dark'), []);
 
+  const getThemeDisplayName = (themeType: Theme) => {
+    switch (themeType) {
+      case 'light': return 'Light';
+      case 'dark': return 'Dark';
+      case 'pastel-cute': return 'Pastel Cute';
+      case 'sci-fi-pet': return 'Sci-Fi Pet Bot';
+      case 'nature-spirit': return 'Nature Spirit';
+      default: return 'Light';
+    }
+  };
   return {
     theme,
     isDark: theme === 'dark',
+    isPastelCute: theme === 'pastel-cute',
+    isSciFiPet: theme === 'sci-fi-pet',
+    isNatureSpirit: theme === 'nature-spirit',
     toggleTheme,
+    setThemeDirectly,
     setLightTheme,
-    setDarkTheme
+    setDarkTheme,
+    getThemeDisplayName
   };
 };

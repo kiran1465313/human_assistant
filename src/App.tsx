@@ -49,7 +49,7 @@ function App() {
   }, [messages, isTyping, voiceChat.settings.autoSpeak]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 flex flex-col transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 pastel-cute:from-pink-50 pastel-cute:via-blue-50 pastel-cute:to-green-50 sci-fi-pet:from-gray-900 sci-fi-pet:via-blue-950 sci-fi-pet:to-purple-950 nature-spirit:from-green-50 nature-spirit:via-yellow-50 nature-spirit:to-blue-50 flex flex-col transition-all duration-500">
       {/* Navigation Header */}
       <NavigationHeader
         currentScreen={currentScreen}
