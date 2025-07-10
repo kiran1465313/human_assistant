@@ -21,6 +21,10 @@ export const useTheme = () => {
   // Apply theme to document
   useEffect(() => {
     const root = document.documentElement;
+    const body = document.body;
+    
+    // Add transition class for smooth theme switching
+    body.classList.add('theme-transitioning');
     
     // Remove all theme classes
     root.classList.remove('dark', 'pastel-cute', 'sci-fi-pet', 'nature-spirit');
@@ -38,6 +42,11 @@ export const useTheme = () => {
     
     // Save to localStorage
     localStorage.setItem('theme', theme);
+    
+    // Remove transition class after a short delay
+    setTimeout(() => {
+      body.classList.remove('theme-transitioning');
+    }, 100);
   }, [theme]);
 
   // Listen for system theme changes
@@ -86,6 +95,7 @@ export const useTheme = () => {
       default: return 'Light';
     }
   };
+
   return {
     theme,
     isDark: theme === 'dark',
