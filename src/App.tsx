@@ -39,7 +39,7 @@ function App() {
     triggerPersonalityDemo(trait);
   };
 
-  // Auto-speak new assistant messages
+  // Enhanced voice response logic
   useEffect(() => {
     if (voiceChat.settings.autoSpeak && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
@@ -48,6 +48,16 @@ function App() {
       }
     }
   }, [messages, isTyping, voiceChat.settings.autoSpeak]);
+
+  // Handle voice input responses
+  const handleVoiceMessage = (message: string) => {
+    sendMessage(message);
+    // If voice input was used, automatically speak the response
+    if (voiceChat.settings.enabled) {
+      // Set a flag to speak the next AI response
+      voiceChat.updateSettings({ autoSpeak: true });
+    }
+  };
 
   return (
     <div className={`min-h-screen flex flex-col transition-all duration-500 relative ${
@@ -73,7 +83,7 @@ function App() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col relative z-10">
         {currentScreen === 'welcome' && (
           <WelcomeScreen 
             onStartChat={handleStartChat} 
@@ -103,6 +113,9 @@ function App() {
                       message={message.text}
                       isUser={message.isUser}
                       timestamp={message.timestamp}
+                      onSpeak={voiceChat.settings.enabled ? voiceChat.speak : undefined}
+                      isSpeaking={voiceChat.isSpeaking}
+                      onStopSpeaking={voiceChat.stopSpeaking}
                     />
                   ))}
                   {isTyping && <TypingIndicator />}
@@ -111,7 +124,7 @@ function App() {
               </div>
             )}
             <ChatInput 
-              onSendMessage={sendMessage} 
+              onSendMessage={handleVoiceMessage} 
               disabled={isTyping} 
               voiceChat={voiceChat}
             />
