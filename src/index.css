@@ -2,11 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Theme-specific styles */
+/* Base theme variables */
+:root {
+  --primary-color: #3b82f6;
+  --secondary-color: #8b5cf6;
+  --accent-color: #10b981;
+}
+
+/* Theme-specific CSS variables and styles */
 .pastel-cute {
   --primary-color: #ec4899;
   --secondary-color: #3b82f6;
   --accent-color: #10b981;
+}
+
+.pastel-cute * {
+  transition: all 0.3s ease;
 }
 
 .sci-fi-pet {
@@ -15,10 +26,31 @@
   --accent-color: #06b6d4;
 }
 
+.sci-fi-pet * {
+  transition: all 0.3s ease;
+}
+
 .nature-spirit {
   --primary-color: #059669;
   --secondary-color: #d97706;
   --accent-color: #0ea5e9;
+}
+
+.nature-spirit * {
+  transition: all 0.3s ease;
+}
+
+/* Theme-specific background overrides */
+.pastel-cute {
+  background: linear-gradient(135deg, #fdf2f8 0%, #dbeafe 50%, #d1fae5 100%) !important;
+}
+
+.sci-fi-pet {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #581c87 100%) !important;
+}
+
+.nature-spirit {
+  background: linear-gradient(135deg, #ecfdf5 0%, #fef3c7 50%, #dbeafe 100%) !important;
 }
 
 /* Custom scrollbar for themes */
@@ -32,4 +64,134 @@
 
 .nature-spirit ::-webkit-scrollbar-thumb {
   background: linear-gradient(45deg, #059669, #d97706);
+}
+
+/* Animated objects positioning */
+.theme-objects {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.theme-object {
+  position: absolute;
+  opacity: 0.6;
+  font-size: 1.5rem;
+}
+
+/* Pastel Cute theme objects */
+.pastel-cute .heart-1 {
+  top: 10%;
+  left: 10%;
+  animation: float 3s ease-in-out infinite;
+}
+
+.pastel-cute .heart-2 {
+  top: 20%;
+  right: 15%;
+  animation: float 3s ease-in-out infinite 1s;
+}
+
+.pastel-cute .star-1 {
+  top: 60%;
+  left: 5%;
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+.pastel-cute .star-2 {
+  bottom: 20%;
+  right: 10%;
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+.pastel-cute .cloud-1 {
+  top: 30%;
+  left: 80%;
+  animation: sway 5s ease-in-out infinite;
+}
+
+/* Sci-Fi Pet theme objects */
+.sci-fi-pet .circuit-1 {
+  top: 15%;
+  left: 5%;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.sci-fi-pet .circuit-2 {
+  top: 70%;
+  right: 8%;
+  animation: glow 2s ease-in-out infinite alternate 1s;
+}
+
+.sci-fi-pet .orb-1 {
+  top: 40%;
+  left: 90%;
+  animation: float 3s ease-in-out infinite;
+}
+
+.sci-fi-pet .orb-2 {
+  bottom: 30%;
+  left: 10%;
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.sci-fi-pet .satellite-1 {
+  top: 25%;
+  right: 20%;
+  animation: spin-slow 8s linear infinite;
+}
+
+/* Nature Spirit theme objects */
+.nature-spirit .leaf-1 {
+  top: 10%;
+  left: 15%;
+  animation: flutter 3s ease-in-out infinite;
+}
+
+.nature-spirit .leaf-2 {
+  top: 50%;
+  right: 10%;
+  animation: sway 4s ease-in-out infinite;
+}
+
+.nature-spirit .butterfly-1 {
+  top: 30%;
+  left: 70%;
+  animation: flutter 2s ease-in-out infinite;
+}
+
+.nature-spirit .flower-1 {
+  bottom: 25%;
+  left: 8%;
+  animation: bounce-gentle 3s ease-in-out infinite;
+}
+
+.nature-spirit .bird-1 {
+  top: 20%;
+  right: 25%;
+  animation: float-delayed 4s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .theme-object {
+    font-size: 1.2rem;
+  }
+  
+  /* Hide some objects on mobile for cleaner look */
+  .theme-object:nth-child(odd) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-object {
+    font-size: 1rem;
+    opacity: 0.4;
+  }
 }

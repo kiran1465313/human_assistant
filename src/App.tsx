@@ -10,6 +10,7 @@ import { useChat } from './hooks/useChat';
 import { useNavigation } from './hooks/useNavigation';
 import { useVoiceChat } from './hooks/useVoiceChat';
 import { useTheme } from './hooks/useTheme';
+import { ThemeObjects } from './components/ThemeObjects';
 
 function App() {
   const { messages, isTyping, sendMessage, triggerPersonalityDemo } = useChat();
@@ -49,7 +50,17 @@ function App() {
   }, [messages, isTyping, voiceChat.settings.autoSpeak]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 pastel-cute:from-pink-50 pastel-cute:via-blue-50 pastel-cute:to-green-50 sci-fi-pet:from-gray-900 sci-fi-pet:via-blue-950 sci-fi-pet:to-purple-950 nature-spirit:from-green-50 nature-spirit:via-yellow-50 nature-spirit:to-blue-50 flex flex-col transition-all duration-500">
+    <div className={`min-h-screen flex flex-col transition-all duration-500 relative ${
+      theme.theme === 'light' ? 'bg-gradient-to-br from-blue-50 via-white to-purple-50' :
+      theme.theme === 'dark' ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-purple-900' :
+      theme.theme === 'pastel-cute' ? 'pastel-cute' :
+      theme.theme === 'sci-fi-pet' ? 'sci-fi-pet' :
+      theme.theme === 'nature-spirit' ? 'nature-spirit' :
+      'bg-gradient-to-br from-blue-50 via-white to-purple-50'
+    }`}>
+      {/* Animated Theme Objects */}
+      <ThemeObjects />
+      
       {/* Navigation Header */}
       <NavigationHeader
         currentScreen={currentScreen}
