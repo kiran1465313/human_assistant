@@ -85,6 +85,42 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
+/* Mirror finish effects */
+.mirror-surface {
+  background: linear-gradient(135deg, 
+    rgba(255,255,255,0.1) 0%, 
+    rgba(255,255,255,0.05) 25%, 
+    rgba(0,0,0,0.05) 50%, 
+    rgba(255,255,255,0.05) 75%, 
+    rgba(255,255,255,0.1) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Backlit text glow effects */
+.backlit-text {
+  text-shadow: 
+    0 0 5px currentColor,
+    0 0 10px currentColor,
+    0 0 15px currentColor,
+    0 0 20px currentColor;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom scrollbar for themes */
 .pastel-cute ::-webkit-scrollbar-thumb {
   background: linear-gradient(45deg, #ec4899, #3b82f6);

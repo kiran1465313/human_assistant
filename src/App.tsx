@@ -83,7 +83,7 @@ function App() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col relative z-10">
+      <main className="flex-1 flex flex-col relative z-10 pt-20">
         {currentScreen === 'welcome' && (
           <WelcomeScreen 
             onStartChat={handleStartChat} 
@@ -105,7 +105,7 @@ function App() {
                 theme={theme}
               />
             ) : (
-              <div className="flex-1 overflow-y-auto p-4">
+              <div className="flex-1 overflow-y-auto p-4 pt-6">
                 <div className="max-w-4xl mx-auto">
                   {messages.map((message) => (
                     <ChatMessage
@@ -131,9 +131,17 @@ function App() {
           </>
         )}
         
-        {currentScreen === 'settings' && <SettingsScreen voiceChat={voiceChat} theme={theme} />}
+        {currentScreen === 'settings' && (
+          <div className="pt-6">
+            <SettingsScreen voiceChat={voiceChat} theme={theme} />
+          </div>
+        )}
         
-        {currentScreen === 'about' && <AboutScreen theme={theme} />}
+        {currentScreen === 'about' && (
+          <div className="pt-6">
+            <AboutScreen theme={theme} />
+          </div>
+        )}
       </main>
     </div>
   );
