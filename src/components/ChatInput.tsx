@@ -1,16 +1,24 @@
 import React, { useState, KeyboardEvent } from 'react';
-import { Send, Smile } from 'lucide-react';
+import { Send, Smile, Trash2 } from 'lucide-react';
 import { EmojiPicker } from './EmojiPicker';
 import { VoiceControls } from './VoiceControls';
 import { useTheme } from '../hooks/useTheme';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
+  onClearChat?: () => void;
   disabled?: boolean;
   voiceChat?: any;
+  hasMessages?: boolean;
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false, voiceChat }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ 
+  onSendMessage, 
+  onClearChat, 
+  disabled = false, 
+  voiceChat,
+  hasMessages = false 
+}) => {
   const [message, setMessage] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const theme = useTheme();
@@ -27,7 +35,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !disabled) {
       e.preventDefault();
       handleSend();
     }
@@ -44,6 +52,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
         console.error('Voice input error:', error);
       }
     );
+  };
+
+  const handleClearChat = () => {
+    if (onClearChat && hasMessages) {
+      if (window.confirm('Are you sure you want to clear all messages? This action cannot be undone.')) {
+        onClearChat();
+      }
+    }
   };
 
   const getInputBg = () => {
@@ -85,9 +101,33 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
     }
   };
 
+  const getClearButtonStyle = () => {
+    switch (theme.theme) {
+      case 'pastel-cute': 
+        return 'bg-gradient-to-r from-red-400 to-pink-500 hover:from-red-500 hover:to-pink-600 shadow-lg shadow-red-500/30';
+      case 'sci-fi-pet': 
+        return 'bg-gradient-to-r from-red-500 to-purple-500 hover:from-red-600 hover:to-purple-600 shadow-lg shadow-red-500/30';
+      case 'nature-spirit': 
+        return 'bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 shadow-lg shadow-red-500/30';
+      default: 
+        return 'bg-red-500 hover:bg-red-600 shadow-lg';
+    }
+  };
+
   return (
     <div className={`border-t p-4 transition-all duration-300 ${getContainerBg()}`}>
       <div className="flex items-end gap-3 max-w-4xl mx-auto">
+        {/* Clear Chat Button */}
+        {hasMessages && (
+          <button
+            onClick={handleClearChat}
+            className={`flex-shrink-0 p-3 text-white rounded-full transition-all duration-200 hover:scale-110 ${getClearButtonStyle()}`}
+            title="Clear chat history"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
+        
         <div className="relative">
           <button 
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
@@ -127,8 +167,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message here..."
+            onKeyDown={handleKeyPress}
+            placeholder="Type your message here... (Enter to send, Shift+Enter for new line)"
             disabled={disabled}
             className={`w-full py-3 pr-12 border rounded-2xl resize-none focus:outline-none focus:ring-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg ${
               voiceChat ? 'pl-16' : 'px-4'

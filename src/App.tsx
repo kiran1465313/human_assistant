@@ -13,7 +13,7 @@ import { useTheme } from './hooks/useTheme';
 import { ThemeObjects } from './components/ThemeObjects';
 
 function App() {
-  const { messages, isTyping, sendMessage, triggerPersonalityDemo } = useChat();
+  const { messages, isTyping, sendMessage, triggerPersonalityDemo, clearChat } = useChat();
   const { currentScreen, navigateTo, goBack, goHome, canGoBack } = useNavigation();
   const voiceChat = useVoiceChat();
   const theme = useTheme();
@@ -83,7 +83,7 @@ function App() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col relative z-10 pt-20">
+      <main className="flex-1 flex flex-col relative z-10 pt-20 max-w-6xl mx-auto w-full px-4">
         {currentScreen === 'welcome' && (
           <WelcomeScreen 
             onStartChat={handleStartChat} 
@@ -123,11 +123,15 @@ function App() {
                 </div>
               </div>
             )}
-            <ChatInput 
-              onSendMessage={handleVoiceMessage} 
-              disabled={isTyping} 
-              voiceChat={voiceChat}
-            />
+            <div className="w-full">
+              <ChatInput 
+                onSendMessage={handleVoiceMessage} 
+                onClearChat={clearChat}
+                disabled={isTyping} 
+                voiceChat={voiceChat}
+                hasMessages={hasMessages}
+              />
+            </div>
           </>
         )}
         

@@ -39,10 +39,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, onNav
         <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 mx-auto">
           <MessageCircle className="w-10 h-10 text-white" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-center">
           Hi there! I'm an Ai assistant Created by Kiran
         </h1>
-        <p className="text-gray-600 text-lg max-w-md">
+        <p className="text-gray-600 dark:text-gray-300 text-lg max-w-md mx-auto text-center">
           I'm here to help you with anything you need — from answering questions to having friendly conversations. How can I assist you today?
         </p>
       </div>

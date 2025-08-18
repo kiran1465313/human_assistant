@@ -8,9 +8,46 @@ export interface Message {
   timestamp: Date;
 }
 
+// Chat history management
+const CHAT_HISTORY_KEY = 'hello-guys-chat-history';
+
+const saveChatHistory = (messages: Message[]) => {
+  try {
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
+  } catch (error) {
+    console.error('Failed to save chat history:', error);
+  }
+};
+
+const loadChatHistory = (): Message[] => {
+  try {
+    const saved = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.map((msg: any) => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp)
+      }));
+    }
+  } catch (error) {
+    console.error('Failed to load chat history:', error);
+  }
+  return [];
+};
+
 export const useChat = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => loadChatHistory());
   const [isTyping, setIsTyping] = useState(false);
+
+  // Save messages whenever they change
+  const updateMessages = useCallback((newMessages: Message[]) => {
+    setMessages(newMessages);
+    saveChatHistory(newMessages);
+  }, []);
+
+  const clearChat = useCallback(() => {
+    updateMessages([]);
+  }, [updateMessages]);
 
   const triggerPersonalityDemo = useCallback(async (trait: string) => {
     setIsTyping(true);
@@ -49,8 +86,8 @@ export const useChat = () => {
     };
     
     setIsTyping(false);
-    setMessages([assistantMessage]);
-  }, []);
+    updateMessages([assistantMessage]);
+  }, [updateMessages]);
 
   const sendMessage = useCallback(async (text: string) => {
     // Input validation and sanitization
@@ -67,7 +104,11 @@ export const useChat = () => {
       timestamp: new Date()
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => {
+      const newMessages = [...prev, userMessage];
+      saveChatHistory(newMessages);
+      return newMessages;
+    });
     setIsTyping(true);
     
     try {
@@ -82,7 +123,11 @@ export const useChat = () => {
       };
       
       setIsTyping(false);
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages(prev => {
+        const newMessages = [...prev, assistantMessage];
+        saveChatHistory(newMessages);
+        return newMessages;
+      });
       
     } catch (error) {
       console.error('Error in chat:', error);
@@ -96,7 +141,11 @@ export const useChat = () => {
       };
       
       setIsTyping(false);
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => {
+        const newMessages = [...prev, errorMessage];
+        saveChatHistory(newMessages);
+        return newMessages;
+      });
     }
   }, []);
 
@@ -104,6 +153,7 @@ export const useChat = () => {
     messages,
     isTyping,
     sendMessage,
-    triggerPersonalityDemo
+    triggerPersonalityDemo,
+    clearChat
   };
 };
