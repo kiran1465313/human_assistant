@@ -49,6 +49,70 @@ export const useChat = () => {
     updateMessages([]);
   }, [updateMessages]);
 
+  const analyzeDocument = useCallback(async (content: string, fileName: string) => {
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      text: `📄 **Document Analysis Request**\n\n**File:** ${fileName}\n\n**Content Preview:**\n${content.substring(0, 500)}${content.length > 500 ? '...' : ''}`,
+      isUser: true,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => {
+      const newMessages = [...prev, userMessage];
+      saveChatHistory(newMessages);
+      return newMessages;
+    });
+    setIsTyping(true);
+    
+    try {
+      const analysisPrompt = `Please analyze this document and provide insights:
+
+Filename: ${fileName}
+Content: ${content}
+
+Please provide:
+1. A summary of the main points
+2. Key insights or findings
+3. Any recommendations or observations
+4. Structure and organization analysis
+
+Make your response comprehensive but easy to understand.`;
+      
+      const response = await geminiService.generateResponse(analysisPrompt);
+      
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: `📊 **Document Analysis Complete**\n\n${response}`,
+        isUser: false,
+        timestamp: new Date()
+      };
+      
+      setIsTyping(false);
+      setMessages(prev => {
+        const newMessages = [...prev, assistantMessage];
+        saveChatHistory(newMessages);
+        return newMessages;
+      });
+      
+    } catch (error) {
+      console.error('Error analyzing document:', error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: `📄 **Document Analysis**\n\nI've received your document "${fileName}" but I'm having trouble with the detailed analysis right now. However, I can see it contains ${content.length} characters.\n\n**What I can tell you:**\n• Document size: ${(content.length / 1024).toFixed(1)} KB\n• Estimated reading time: ${Math.ceil(content.split(' ').length / 200)} minutes\n\n**Quick overview:**\n${content.substring(0, 300)}...\n\nWould you like me to help you with any specific questions about this document?`,
+        isUser: false,
+        timestamp: new Date()
+      };
+      
+      setIsTyping(false);
+      setMessages(prev => {
+        const newMessages = [...prev, errorMessage];
+        saveChatHistory(newMessages);
+        return newMessages;
+      });
+    }
+  }, []);
+
   const triggerPersonalityDemo = useCallback(async (trait: string) => {
     setIsTyping(true);
     
@@ -154,6 +218,7 @@ export const useChat = () => {
     isTyping,
     sendMessage,
     triggerPersonalityDemo,
-    clearChat
+    clearChat,
+    analyzeDocument
   };
 };

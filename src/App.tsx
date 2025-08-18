@@ -6,6 +6,7 @@ import { TypingIndicator } from './components/TypingIndicator';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { SettingsScreen } from './components/SettingsScreen';
 import { AboutScreen } from './components/AboutScreen';
+import { ChatMascot } from './components/ChatMascot';
 import { useChat } from './hooks/useChat';
 import { useNavigation } from './hooks/useNavigation';
 import { useVoiceChat } from './hooks/useVoiceChat';
@@ -13,11 +14,13 @@ import { useTheme } from './hooks/useTheme';
 import { ThemeObjects } from './components/ThemeObjects';
 
 function App() {
-  const { messages, isTyping, sendMessage, triggerPersonalityDemo, clearChat } = useChat();
+  const { messages, isTyping, sendMessage, triggerPersonalityDemo, clearChat, analyzeDocument } = useChat();
   const { currentScreen, navigateTo, goBack, goHome, canGoBack } = useNavigation();
   const voiceChat = useVoiceChat();
   const theme = useTheme();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [lastMessageType, setLastMessageType] = useState<'user' | 'ai' | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,6 +40,12 @@ function App() {
   const handlePersonalityDemo = (trait: string) => {
     navigateTo('chat');
     triggerPersonalityDemo(trait);
+  };
+
+  const handleDocumentAnalyze = async (content: string, fileName: string) => {
+    setIsAnalyzing(true);
+    await analyzeDocument(content, fileName);
+    setIsAnalyzing(false);
   };
 
   // Enhanced voice response logic
@@ -59,6 +68,14 @@ function App() {
     }
   };
 
+  // Track last message type for mascot
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      setLastMessageType(lastMessage.isUser ? 'user' : 'ai');
+    }
+  }, [messages]);
+
   return (
     <div className={`min-h-screen flex flex-col transition-all duration-500 relative ${
       theme.theme === 'light' ? 'bg-gradient-to-br from-blue-50 via-white to-purple-50' :
@@ -70,6 +87,15 @@ function App() {
     }`}>
       {/* Animated Theme Objects */}
       <ThemeObjects />
+      
+      {/* Chat Mascot */}
+      <ChatMascot 
+        isTyping={isTyping}
+        isSpeaking={voiceChat.isSpeaking}
+        isListening={voiceChat.isListening}
+        lastMessageType={lastMessageType}
+        mood="happy"
+      />
       
       {/* Navigation Header */}
       <NavigationHeader
@@ -126,6 +152,8 @@ function App() {
             <div className="w-full">
               <ChatInput 
                 onSendMessage={handleVoiceMessage} 
+                onDocumentAnalyze={handleDocumentAnalyze}
+                isAnalyzing={isAnalyzing}
                 onClearChat={clearChat}
                 disabled={isTyping} 
                 voiceChat={voiceChat}
@@ -137,7 +165,11 @@ function App() {
         
         {currentScreen === 'settings' && (
           <div className="pt-6">
-            <SettingsScreen voiceChat={voiceChat} theme={theme} />
+            <SettingsScreen 
+              voiceChat={voiceChat} 
+              theme={theme}
+              onClearAllData={() => console.log('Data cleared')}
+              onExportData={() => console.log('Data exported')} />
           </div>
         )}
         
@@ -151,4 +183,5 @@ function App() {
   );
 }
 
+const [isAnalyzing, setIsAnalyzing] = useState(false);
 export default App;

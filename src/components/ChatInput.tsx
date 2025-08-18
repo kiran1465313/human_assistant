@@ -1,7 +1,8 @@
 import React, { useState, KeyboardEvent } from 'react';
-import { Send, Smile, Trash2 } from 'lucide-react';
+import { Send, Smile, Trash2, Paperclip } from 'lucide-react';
 import { EmojiPicker } from './EmojiPicker';
 import { VoiceControls } from './VoiceControls';
+import { DocumentAnalysis } from './DocumentAnalysis';
 import { useTheme } from '../hooks/useTheme';
 
 interface ChatInputProps {
@@ -10,6 +11,8 @@ interface ChatInputProps {
   disabled?: boolean;
   voiceChat?: any;
   hasMessages?: boolean;
+  onDocumentAnalyze?: (content: string, fileName: string) => void;
+  isAnalyzing?: boolean;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({ 
@@ -17,10 +20,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onClearChat, 
   disabled = false, 
   voiceChat,
-  hasMessages = false 
+  hasMessages = false,
+  onDocumentAnalyze,
+  isAnalyzing = false
 }) => {
   const [message, setMessage] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showDocumentUpload, setShowDocumentUpload] = useState(false);
   const theme = useTheme();
 
   const handleSend = () => {
@@ -60,6 +66,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         onClearChat();
       }
     }
+  };
+
+  const handleDocumentAnalyze = (content: string, fileName: string) => {
+    onDocumentAnalyze?.(content, fileName);
+    setShowDocumentUpload(false);
   };
 
   const getInputBg = () => {
@@ -115,7 +126,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className={`border-t p-4 transition-all duration-300 ${getContainerBg()}`}>
+    <div className={`border-t p-6 transition-all duration-300 ${getContainerBg()}`}>
       <div className="flex items-end gap-3 max-w-4xl mx-auto">
         {/* Clear Chat Button */}
         {hasMessages && (
@@ -128,7 +139,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           </button>
         )}
         
-        <div className="relative">
+        <div className="relative flex gap-2">
           <button 
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             className={`flex-shrink-0 p-2 rounded-full transition-all duration-200 hover:scale-110 ${
@@ -140,6 +151,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           >
             <Smile className="w-5 h-5" />
           </button>
+          
+          <button 
+            onClick={() => setShowDocumentUpload(!showDocumentUpload)}
+            className={`flex-shrink-0 p-2 rounded-full transition-all duration-200 hover:scale-110 ${
+              theme.theme === 'pastel-cute' ? 'text-pink-500 hover:bg-pink-100' :
+              theme.theme === 'sci-fi-pet' ? 'text-blue-400 hover:bg-blue-900/30' :
+              theme.theme === 'nature-spirit' ? 'text-green-600 hover:bg-green-100' :
+              'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            <Paperclip className="w-5 h-5" />
+          </button>
           <EmojiPicker 
             isOpen={showEmojiPicker}
             onEmojiSelect={handleEmojiSelect}
@@ -148,44 +171,52 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         </div>
         
         <div className="flex-1 relative">
-          {/* Voice Controls - Better positioned */}
-          {voiceChat && (
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
-              <VoiceControls
-                isListening={voiceChat.isListening}
-                isSpeaking={voiceChat.isSpeaking}
-                isSupported={voiceChat.isSupported}
-                onStartListening={handleVoiceInput}
-                onStopListening={voiceChat.stopListening}
-                onStopSpeaking={voiceChat.stopSpeaking}
-                disabled={disabled}
-                compact={true}
-              />
-            </div>
-          )}
-          
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type your message here... (Enter to send, Shift+Enter for new line)"
             disabled={disabled}
-            className={`w-full py-3 pr-12 border rounded-2xl resize-none focus:outline-none focus:ring-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg ${
-              voiceChat ? 'pl-16' : 'px-4'
-            } ${getInputBg()}`}
+            className={`w-full py-4 px-6 pr-12 border rounded-3xl resize-none focus:outline-none focus:ring-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg ${getInputBg()}`}
             rows={1}
-            style={{ minHeight: '48px', maxHeight: '120px' }}
+            style={{ minHeight: '56px', maxHeight: '120px' }}
           />
         </div>
+        
+        {/* Voice Controls - Separate area */}
+        {voiceChat && (
+          <div className="flex-shrink-0">
+            <VoiceControls
+              isListening={voiceChat.isListening}
+              isSpeaking={voiceChat.isSpeaking}
+              isSupported={voiceChat.isSupported}
+              onStartListening={handleVoiceInput}
+              onStopListening={voiceChat.stopListening}
+              onStopSpeaking={voiceChat.stopSpeaking}
+              disabled={disabled}
+              compact={false}
+            />
+          </div>
+        )}
         
         <button
           onClick={handleSend}
           disabled={!message.trim() || disabled}
-          className={`flex-shrink-0 p-3 text-white rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110 ${getSendButtonStyle()}`}
+          className={`flex-shrink-0 p-4 text-white rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110 ${getSendButtonStyle()}`}
         >
-          <Send className="w-4 h-4" />
+          <Send className="w-5 h-5" />
         </button>
       </div>
+      
+      {/* Document Upload Modal */}
+      {showDocumentUpload && (
+        <div className="mt-4 max-w-4xl mx-auto">
+          <DocumentAnalysis 
+            onAnalyze={handleDocumentAnalyze}
+            isAnalyzing={isAnalyzing}
+          />
+        </div>
+      )}
     </div>
   );
 };

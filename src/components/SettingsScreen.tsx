@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, Bell, Globe, Shield } from 'lucide-react';
+import { Volume2, Bell, Globe, Shield, Trash2, Download, AlertTriangle } from 'lucide-react';
 import { VoiceSettings } from './VoiceSettings';
 import { APISettings } from './APISettings';
 import { ThemeSelector } from './ThemeSelector';
@@ -8,9 +8,70 @@ import { useTheme } from '../hooks/useTheme';
 interface SettingsScreenProps {
   voiceChat?: any;
   theme?: ReturnType<typeof useTheme>;
+  onClearAllData?: () => void;
+  onExportData?: () => void;
 }
 
-export const SettingsScreen: React.FC<SettingsScreenProps> = ({ voiceChat, theme }) => {
+export const SettingsScreen: React.FC<SettingsScreenProps> = ({ 
+  voiceChat, 
+  theme, 
+  onClearAllData, 
+  onExportData 
+}) => {
+  const handleClearAllData = () => {
+    if (window.confirm('⚠️ This will permanently delete all your chat history, settings, and API keys. This action cannot be undone. Are you sure?')) {
+      if (window.confirm('🚨 Last chance! This will clear EVERYTHING. Continue?')) {
+        // Clear all localStorage data
+        localStorage.clear();
+        
+        // Call the callback if provided
+        onClearAllData?.();
+        
+        // Show success message and reload
+        alert('✅ All data has been cleared successfully. The page will now reload.');
+        window.location.reload();
+      }
+    }
+  };
+
+  const handleExportData = () => {
+    try {
+      const data = {
+        chatHistory: localStorage.getItem('hello-guys-chat-history'),
+        voiceSettings: localStorage.getItem('voice-settings'),
+        theme: localStorage.getItem('theme'),
+        exportDate: new Date().toISOString(),
+        version: '1.0.0'
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `hello-guys-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      onExportData?.();
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('❌ Failed to export data. Please try again.');
+    }
+  };
+
+  const testVoice = () => {
+    if (voiceChat?.settings.voice && window.speechSynthesis) {
+      const utterance = new SpeechSynthesisUtterance("नमस्ते! मैं आपका AI असिस्टेंट हूँ। Hello! I am your AI assistant. This is how I sound with the current settings.");
+      utterance.voice = voiceChat.settings.voice;
+      utterance.rate = voiceChat.settings.rate;
+      utterance.pitch = voiceChat.settings.pitch;
+      utterance.volume = voiceChat.settings.volume;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   return (
     <div className="flex-1 overflow-y-auto p-6">
       <div className="max-w-2xl mx-auto">
@@ -32,6 +93,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ voiceChat, theme
               settings={voiceChat.settings}
               voices={voiceChat.voices}
               onUpdateSettings={voiceChat.updateSettings}
+              onTestVoice={testVoice}
             />
           )}
 
@@ -161,25 +223,72 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ voiceChat, theme
                 </label>
               </div>
               
-              <button className={`w-full text-left p-3 rounded-lg transition-all duration-300 ${
+              <div className="space-y-3">
+                <button 
+                  onClick={handleExportData}
+                  className={`w-full text-left p-3 rounded-lg transition-all duration-300 ${
+                    theme?.theme === 'pastel-cute' ? 'bg-blue-100 hover:bg-blue-200 border border-blue-300' :
+                    theme?.theme === 'sci-fi-pet' ? 'bg-blue-900/30 hover:bg-blue-800/40 border border-blue-700' :
+                    theme?.theme === 'nature-spirit' ? 'bg-blue-100 hover:bg-blue-200 border border-blue-300' :
+                    'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-800'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Download className={`w-5 h-5 ${
+                      theme?.theme === 'pastel-cute' ? 'text-blue-700' :
+                      theme?.theme === 'sci-fi-pet' ? 'text-blue-300' :
+                      theme?.theme === 'nature-spirit' ? 'text-blue-700' :
+                      'text-blue-600 dark:text-blue-400'
+                    }`} />
+                    <div>
+                      <p className={`font-medium ${
+                        theme?.theme === 'pastel-cute' ? 'text-blue-800' :
+                        theme?.theme === 'sci-fi-pet' ? 'text-blue-200' :
+                        theme?.theme === 'nature-spirit' ? 'text-blue-800' :
+                        'text-blue-700 dark:text-blue-300'
+                      }`}>Export Data</p>
+                      <p className={`text-sm ${
+                        theme?.theme === 'pastel-cute' ? 'text-blue-700' :
+                        theme?.theme === 'sci-fi-pet' ? 'text-blue-400' :
+                        theme?.theme === 'nature-spirit' ? 'text-blue-700' :
+                        'text-blue-600 dark:text-blue-400'
+                      }`}>Download your chat history and settings</p>
+                    </div>
+                  </div>
+                </button>
+                
+                <button 
+                  onClick={handleClearAllData}
+                  className={`w-full text-left p-3 rounded-lg transition-all duration-300 ${
                 theme?.theme === 'pastel-cute' ? 'bg-red-100 hover:bg-red-200 border border-red-300' :
                 theme?.theme === 'sci-fi-pet' ? 'bg-red-900/30 hover:bg-red-800/40 border border-red-700' :
                 theme?.theme === 'nature-spirit' ? 'bg-red-100 hover:bg-red-200 border border-red-300' :
                 'bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800'
               }`}>
-                <p className={`font-medium ${
-                  theme?.theme === 'pastel-cute' ? 'text-red-800' :
-                  theme?.theme === 'sci-fi-pet' ? 'text-red-300' :
-                  theme?.theme === 'nature-spirit' ? 'text-red-800' :
-                  'text-red-700 dark:text-red-400'
-                }`}>Clear All Data</p>
-                <p className={`text-sm ${
-                  theme?.theme === 'pastel-cute' ? 'text-red-700' :
-                  theme?.theme === 'sci-fi-pet' ? 'text-red-400' :
-                  theme?.theme === 'nature-spirit' ? 'text-red-700' :
-                  'text-red-600 dark:text-red-500'
-                }`}>Delete all conversations and settings</p>
-              </button>
+                  <div className="flex items-center gap-3">
+                    <AlertTriangle className={`w-5 h-5 ${
+                      theme?.theme === 'pastel-cute' ? 'text-red-700' :
+                      theme?.theme === 'sci-fi-pet' ? 'text-red-300' :
+                      theme?.theme === 'nature-spirit' ? 'text-red-700' :
+                      'text-red-600 dark:text-red-400'
+                    }`} />
+                    <div>
+                      <p className={`font-medium ${
+                        theme?.theme === 'pastel-cute' ? 'text-red-800' :
+                        theme?.theme === 'sci-fi-pet' ? 'text-red-300' :
+                        theme?.theme === 'nature-spirit' ? 'text-red-800' :
+                        'text-red-700 dark:text-red-400'
+                      }`}>Clear All Data</p>
+                      <p className={`text-sm ${
+                        theme?.theme === 'pastel-cute' ? 'text-red-700' :
+                        theme?.theme === 'sci-fi-pet' ? 'text-red-400' :
+                        theme?.theme === 'nature-spirit' ? 'text-red-700' :
+                        'text-red-600 dark:text-red-500'
+                      }`}>⚠️ Permanently delete all conversations, settings, and API keys</p>
+                    </div>
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         </div>

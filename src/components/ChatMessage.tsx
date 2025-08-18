@@ -64,7 +64,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   };
 
   return (
-    <div className={`flex gap-3 mb-6 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-fade-in-up`}>
+    <div className={`flex gap-4 mb-8 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-fade-in-up`}>
       <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
         isUser ? 'bg-blue-500' : 'bg-gradient-to-br from-purple-500 to-pink-500'
       }`}>
@@ -76,27 +76,32 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       </div>
       
       <div className={`flex flex-col max-w-[70%] ${isUser ? 'items-end' : 'items-start'}`}>
-        <div className={`relative group px-4 py-3 rounded-2xl ${
+        <div className={`relative group px-6 py-4 ${
           isUser 
-            ? `${getMessageBg()} text-white rounded-br-md` 
-            : `${getMessageBg()} ${getTextColor()} rounded-bl-md transition-all duration-300`
+            ? `${getMessageBg()} text-white rounded-3xl rounded-br-lg shadow-lg` 
+            : `${getMessageBg()} ${getTextColor()} rounded-3xl rounded-bl-lg transition-all duration-300`
         }`}>
           {/* Gradient text overlay for better readability */}
           {!isUser && (
-            <div className="absolute inset-0 rounded-2xl rounded-bl-md bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 rounded-3xl rounded-bl-lg bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
           )}
           
           <div className="relative z-10">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap font-medium">
-              {message}
-            </p>
+            <div className="text-sm leading-relaxed whitespace-pre-wrap font-medium">
+              {message.split('\n').map((line, index) => (
+                <React.Fragment key={index}>
+                  {line}
+                  {index < message.split('\n').length - 1 && <br />}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
           
           {/* Voice button for AI messages */}
           {!isUser && onSpeak && (
             <button
               onClick={handleSpeakClick}
-              className={`absolute -right-2 -bottom-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 ${
+              className={`absolute -right-3 -bottom-3 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 ${
                 theme.theme === 'pastel-cute' ? 'bg-pink-500 hover:bg-pink-600 text-white shadow-lg shadow-pink-500/30' :
                 theme.theme === 'sci-fi-pet' ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/30' :
                 theme.theme === 'nature-spirit' ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30' :
@@ -105,15 +110,15 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
               title={isSpeaking ? 'Stop speaking' : 'Speak message'}
             >
               {isSpeaking ? (
-                <VolumeX className="w-4 h-4" />
+                <VolumeX className="w-5 h-5" />
               ) : (
-                <Volume2 className="w-4 h-4" />
+                <Volume2 className="w-5 h-5" />
               )}
             </button>
           )}
         </div>
         
-        <span className={`text-xs mt-1 px-1 ${
+        <span className={`text-xs mt-2 px-2 ${
           theme.theme === 'pastel-cute' ? 'text-pink-500' :
           theme.theme === 'sci-fi-pet' ? 'text-blue-400' :
           theme.theme === 'nature-spirit' ? 'text-green-600' :

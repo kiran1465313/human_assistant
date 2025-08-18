@@ -16,11 +16,11 @@ export const useVoiceChat = () => {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [settings, setSettings] = useState<VoiceSettings>({
     enabled: true,
-    autoSpeak: true,
+    autoSpeak: false,
     voice: null,
-    rate: 1,
+    rate: 1.1,
     pitch: 1,
-    volume: 0.8
+    volume: 0.9
   });
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -46,8 +46,10 @@ export const useVoiceChat = () => {
         const availableVoices = speechSynthesis.getVoices();
         setVoices(availableVoices);
         
-        // Set default voice (prefer female English voice)
+        // Set default voice (prefer Hindi voice, then English)
         const defaultVoice = availableVoices.find(voice => 
+          voice.lang.startsWith('hi')
+        ) || availableVoices.find(voice => 
           voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')
         ) || availableVoices.find(voice => voice.lang.startsWith('en')) || availableVoices[0];
         
@@ -58,6 +60,23 @@ export const useVoiceChat = () => {
 
       loadVoices();
       speechSynthesis.onvoiceschanged = loadVoices;
+      
+      // Load saved settings
+      const savedSettings = localStorage.getItem('voice-settings');
+      if (savedSettings) {
+        try {
+          const parsed = JSON.parse(savedSettings);
+          // Find the saved voice by name
+          const savedVoice = availableVoices.find(v => v.name === parsed.voiceName);
+          setSettings(prev => ({
+            ...prev,
+            ...parsed,
+            voice: savedVoice || prev.voice
+          }));
+        } catch (error) {
+          console.error('Failed to load voice settings:', error);
+        }
+      }
     }
 
     return () => {
@@ -69,6 +88,17 @@ export const useVoiceChat = () => {
       }
     };
   }, []);
+
+  // Save settings to localStorage whenever they change
+  useEffect(() => {
+    const settingsToSave = {
+      ...settings,
+      voiceName: settings.voice?.name || null
+    };
+    delete (settingsToSave as any).voice; // Don't save the voice object itself
+    
+    localStorage.setItem('voice-settings', JSON.stringify(settingsToSave));
+  }, [settings]);
 
   const startListening = useCallback((onResult: (text: string) => void, onError?: (error: string) => void) => {
     if (!recognitionRef.current || !settings.enabled) return;
@@ -144,6 +174,11 @@ export const useVoiceChat = () => {
     setSettings(prev => ({ ...prev, ...newSettings }));
   }, []);
 
+  const resetToDefaults = useCallback(() => {
+    localStorage.removeItem('voice-settings');
+    window.location.reload();
+  }, []);
+
   return {
     isListening,
     isSpeaking,
@@ -155,5 +190,7 @@ export const useVoiceChat = () => {
     speak,
     stopSpeaking,
     updateSettings
+    updateSettings,
+    resetToDefaults
   };
 };

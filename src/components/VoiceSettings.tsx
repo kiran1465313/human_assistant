@@ -1,18 +1,36 @@
 import React from 'react';
-import { Volume2, Settings } from 'lucide-react';
+import { Volume2, Settings, Globe } from 'lucide-react';
 import { VoiceSettings as VoiceSettingsType } from '../hooks/useVoiceChat';
 
 interface VoiceSettingsProps {
   settings: VoiceSettingsType;
   voices: SpeechSynthesisVoice[];
   onUpdateSettings: (settings: Partial<VoiceSettingsType>) => void;
+  onTestVoice: () => void;
 }
 
 export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
   settings,
   voices,
-  onUpdateSettings
+  onUpdateSettings,
+  onTestVoice
 }) => {
+  // Tone presets
+  const tonePresets = [
+    { name: 'Professional', rate: 1.0, pitch: 1.0, description: 'Clear and formal' },
+    { name: 'Friendly', rate: 1.1, pitch: 1.1, description: 'Warm and approachable' },
+    { name: 'Calm', rate: 0.9, pitch: 0.9, description: 'Slow and soothing' },
+    { name: 'Energetic', rate: 1.3, pitch: 1.2, description: 'Fast and upbeat' },
+    { name: 'Storytelling', rate: 1.0, pitch: 1.1, description: 'Engaging narrative' }
+  ];
+
+  const applyTonePreset = (preset: typeof tonePresets[0]) => {
+    onUpdateSettings({
+      rate: preset.rate,
+      pitch: preset.pitch
+    });
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition-colors duration-300">
       <div className="flex items-center gap-3 mb-4">
@@ -77,6 +95,31 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
           </select>
         </div>
 
+        {/* Tone Presets */}
+        <div>
+          <label className="block font-medium text-gray-700 dark:text-gray-300 mb-3">Voice Tone Presets</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {tonePresets.map((preset) => (
+              <button
+                key={preset.name}
+                onClick={() => applyTonePreset(preset)}
+                disabled={!settings.enabled}
+                className={`p-3 text-left rounded-lg border transition-all duration-200 disabled:opacity-50 hover:scale-[1.02] ${
+                  Math.abs(settings.rate - preset.rate) < 0.1 && Math.abs(settings.pitch - preset.pitch) < 0.1
+                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-indigo-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+              >
+                <div className="font-medium text-gray-800 dark:text-gray-200">{preset.name}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{preset.description}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  Rate: {preset.rate}x, Pitch: {preset.pitch}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Speed Control */}
         <div>
           <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -130,21 +173,28 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
 
         {/* Test Voice Button */}
         <button
-          onClick={() => {
-            if (settings.voice && window.speechSynthesis) {
-              const utterance = new SpeechSynthesisUtterance("Hello! This is how I sound with the current settings.");
-              utterance.voice = settings.voice;
-              utterance.rate = settings.rate;
-              utterance.pitch = settings.pitch;
-              utterance.volume = settings.volume;
-              window.speechSynthesis.speak(utterance);
-            }
-          }}
+          onClick={onTestVoice}
           disabled={!settings.enabled || !settings.voice}
           className="w-full bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors"
         >
           Test Voice
         </button>
+
+        {/* Language Info */}
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <Globe className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-2">Language Support</h4>
+              <p className="text-sm text-blue-700 dark:text-blue-400 mb-2">
+                The selected voice supports: <strong>{settings.voice?.lang || 'Not selected'}</strong>
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-500">
+                For Hindi support, select a voice with 'hi-IN' language code from the dropdown above.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
