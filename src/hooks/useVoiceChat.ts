@@ -67,7 +67,8 @@ export const useVoiceChat = () => {
         try {
           const parsed = JSON.parse(savedSettings);
           // Find the saved voice by name
-          const savedVoice = availableVoices.find(v => v.name === parsed.voiceName);
+          const currentVoices = speechSynthesis.getVoices();
+          const savedVoice = currentVoices.find(v => v.name === parsed.voiceName);
           setSettings(prev => ({
             ...prev,
             ...parsed,
@@ -189,7 +190,6 @@ export const useVoiceChat = () => {
     stopListening,
     speak,
     stopSpeaking,
-    updateSettings
     updateSettings,
     resetToDefaults
   };

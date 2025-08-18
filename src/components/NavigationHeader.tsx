@@ -185,9 +185,6 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
               <h1 className={`font-bold text-lg ${getBacklitTextColor()} transition-all duration-300`}>
                 {getScreenTitle(currentScreen)}
               </h1>
-              <p className={`text-sm ${getSubtitleColor()} transition-all duration-300`}>
-                Created by Kiran
-              </p>
             </div>
           </div>
         </div>

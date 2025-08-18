@@ -15,9 +15,7 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ theme }) => {
             <span className="text-white font-bold text-lg">HG</span>
           </div>
           <h2 className="text-3xl font-bold text-gray-800 mb-2">Hello Guys</h2>
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">Hello Guys</h2>
           <p className="text-gray-600 dark:text-gray-400">Version 1.0.0</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Created with ❤️ by Kiran</p>
         </div>
 
         <div className="space-y-6">
@@ -30,8 +28,8 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ theme }) => {
               and sharing jokes, I'm here to make your day better and more productive.
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Crafted by Kiran with modern web technologies and designed with user experience in mind, 
-              I aim to provide helpful, accurate, and engaging interactions that feel natural and human-like.
+              Built with modern web technologies and designed with user experience in mind, 
+              providing helpful, accurate, and engaging interactions that feel natural and human-like.
             </p>
           </div>
 

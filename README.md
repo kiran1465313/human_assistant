@@ -1,6 +1,6 @@
 # Hello Guys - AI Assistant
 
-A friendly AI assistant created by Kiran, designed to provide helpful, engaging, and natural conversations.
+A friendly AI assistant designed to provide helpful, engaging, and natural conversations.
 
 ## Features
 - Natural conversation flow
@@ -9,5 +9,3 @@ A friendly AI assistant created by Kiran, designed to provide helpful, engaging,
 - Clean, modern interface
 - Responsive design
 
-## Created by
-Kiran - 2025

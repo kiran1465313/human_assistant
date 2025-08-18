@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { NavigationHeader } from './components/NavigationHeader';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
@@ -182,6 +182,4 @@ function App() {
     </div>
   );
 }
-
-const [isAnalyzing, setIsAnalyzing] = useState(false);
 export default App;
