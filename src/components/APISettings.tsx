@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Key, CheckCircle, XCircle, AlertCircle, RefreshCw, Eye, EyeOff, Shield } from 'lucide-react';
+import { Key, CheckCircle, XCircle, AlertCircle, RefreshCw, Eye, EyeOff, Shield, Info } from 'lucide-react';
 import { geminiService } from '../services/geminiService';
 
 export const APISettings: React.FC = () => {
@@ -8,6 +8,7 @@ export const APISettings: React.FC = () => {
   const [showKey, setShowKey] = useState(false);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
   const [testResult, setTestResult] = useState<string>('');
+  const [showInfoPopup, setShowInfoPopup] = useState(false);
 
   useEffect(() => {
     // Load saved API key from localStorage
@@ -139,6 +140,38 @@ export const APISettings: React.FC = () => {
       <div className="flex items-center gap-3 mb-4">
         <Key className="w-6 h-6 text-indigo-500" />
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Google Gemini API Configuration</h3>
+        <div className="ml-auto relative">
+          <button
+            onClick={() => setShowInfoPopup(!showInfoPopup)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            title="API Key Information"
+          >
+            <Info className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          </button>
+          {showInfoPopup && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setShowInfoPopup(false)}
+              />
+              <div className="absolute right-0 top-12 z-50 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-4">
+                <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">API Key Status</h4>
+                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-2">
+                    {getStatusIcon()}
+                    <span>{getStatusText()}</span>
+                  </div>
+                  {apiKey && (
+                    <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">Current Key (Hidden)</p>
+                      <p className="font-mono text-xs">{'*'.repeat(apiKey.length)}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
       
       <div className="space-y-4">
@@ -164,26 +197,26 @@ export const APISettings: React.FC = () => {
           </div>
         </div>
 
-        {/* Setup Instructions */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 transition-colors duration-300">
-          <h4 className="font-medium text-purple-800 dark:text-purple-300 mb-2">🚀 Get Your Free API Key</h4>
-          <p className="text-sm text-purple-700 dark:text-purple-400 mb-3">
-            Enable unlimited AI capabilities with Google's free Gemini API:
-          </p>
-          <ol className="text-sm text-purple-700 dark:text-purple-400 space-y-1 ml-4 list-decimal">
-            <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline hover:text-purple-800 dark:hover:text-purple-300 font-medium">Google AI Studio</a></li>
-            <li>Sign in with your Google account</li>
-            <li>Click "Create API Key" → "Create API key in new project"</li>
-            <li>Copy the generated key (starts with "AIza...")</li>
-            <li>Paste it below and click "Save & Test"</li>
-          </ol>
-        </div>
+        {!isValidKey && (
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors duration-300">
+            <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-2">Get Your Free API Key</h4>
+            <p className="text-sm text-blue-700 dark:text-blue-400 mb-3">
+              Enable unlimited AI capabilities with Google's free Gemini API:
+            </p>
+            <ol className="text-sm text-blue-700 dark:text-blue-400 space-y-1 ml-4 list-decimal">
+              <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-800 dark:hover:text-blue-300 font-medium">Google AI Studio</a></li>
+              <li>Sign in with your Google account</li>
+              <li>Click "Create API Key" and copy it</li>
+              <li>Paste it below and click "Save & Test"</li>
+            </ol>
+          </div>
+        )}
 
-        {/* API Key Input */}
-        <div>
-          <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Google Gemini API Key
-          </label>
+        {!isValidKey && (
+          <div>
+            <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Google Gemini API Key
+            </label>
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <input
@@ -218,7 +251,8 @@ export const APISettings: React.FC = () => {
               )}
             </button>
           </div>
-        </div>
+          </div>
+        )}
 
         {/* Test Result */}
         {testResult && (
@@ -233,74 +267,50 @@ export const APISettings: React.FC = () => {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          {isValidKey && (
-            <>
-              <button
-                onClick={handleTestConnection}
-                disabled={isTestingConnection}
-                className="flex-1 p-3 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800 transition-colors flex items-center justify-center gap-2"
-              >
-                <RefreshCw className={`w-4 h-4 ${isTestingConnection ? 'animate-spin' : ''}`} />
-                Test Connection
-              </button>
-              
-              <button
-                onClick={handleRemoveKey}
-                className="flex-1 p-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800 transition-colors"
-              >
-                Remove API Key
-              </button>
-            </>
-          )}
-        </div>
+        {isValidKey && (
+          <div className="flex gap-3">
+            <button
+              onClick={handleTestConnection}
+              disabled={isTestingConnection}
+              className="flex-1 p-3 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800 transition-colors flex items-center justify-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${isTestingConnection ? 'animate-spin' : ''}`} />
+              Test Connection
+            </button>
 
-        {/* Features Preview */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg border border-green-100 dark:border-green-800 p-4 transition-colors duration-300">
-          <h4 className="font-medium text-green-800 dark:text-green-300 mb-2">✨ With API Key Enabled:</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-green-700 dark:text-green-400">
-            <div>• Unlimited conversations</div>
-            <div>• Real-time knowledge</div>
-            <div>• Advanced programming help</div>
-            <div>• Creative writing assistance</div>
-            <div>• Complex problem solving</div>
-            <div>• Multi-language support</div>
+            <button
+              onClick={handleRemoveKey}
+              className="flex-1 p-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800 transition-colors"
+            >
+              Remove API Key
+            </button>
           </div>
-        </div>
+        )}
 
-        {/* Deployment Instructions */}
-        <details className="bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 transition-colors duration-300">
-          <summary className="p-4 cursor-pointer font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg">
-            🚀 Production Deployment Instructions
-          </summary>
-          <div className="p-4 pt-0 space-y-3 text-sm text-gray-600 dark:text-gray-400">
-            <div>
-              <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Vercel:</h5>
-              <code className="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">
-                Dashboard → Project → Settings → Environment Variables → Add VITE_GEMINI_API_KEY
-              </code>
-            </div>
-            <div>
-              <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Netlify:</h5>
-              <code className="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">
-                Site Settings → Environment Variables → Add VITE_GEMINI_API_KEY
-              </code>
-            </div>
-            <div>
-              <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Railway:</h5>
-              <code className="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">
-                Project → Variables → Add VITE_GEMINI_API_KEY
-              </code>
-            </div>
-            <div>
-              <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Heroku:</h5>
-              <code className="bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded text-xs">
-                heroku config:set VITE_GEMINI_API_KEY=your_key_here
-              </code>
+        {!isValidKey && (
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg border border-green-100 dark:border-green-800 p-4 transition-colors duration-300">
+            <h4 className="font-medium text-green-800 dark:text-green-300 mb-2">With API Key Enabled:</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-green-700 dark:text-green-400">
+              <div>• Unlimited conversations</div>
+              <div>• Real-time knowledge</div>
+              <div>• Advanced programming help</div>
+              <div>• Creative writing assistance</div>
+              <div>• Complex problem solving</div>
+              <div>• Multi-language support</div>
             </div>
           </div>
-        </details>
+        )}
+        {isValidKey && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800 p-4 transition-colors duration-300">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <h4 className="font-medium text-green-800 dark:text-green-300">API Connected Successfully</h4>
+            </div>
+            <p className="text-sm text-green-700 dark:text-green-400">
+              Your chatbot now has access to advanced AI capabilities. All features are enabled.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

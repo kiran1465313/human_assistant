@@ -1,5 +1,5 @@
 import React from 'react';
-import { Palette, Sun, Moon, Heart, Zap, Leaf } from 'lucide-react';
+import { Palette, Sun, Moon, Heart, Zap, Leaf, Cpu } from 'lucide-react';
 import { Theme, useTheme } from '../hooks/useTheme';
 
 interface ThemeSelectorProps {
@@ -42,6 +42,13 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
       icon: <Leaf className="w-5 h-5" />,
       description: 'Earthy greens and natural tones',
       preview: 'bg-gradient-to-r from-green-200 via-yellow-100 to-blue-200'
+    },
+    {
+      value: 'electronics',
+      name: 'Electronics Lab',
+      icon: <Cpu className="w-5 h-5" />,
+      description: 'Circuit board aesthetics with tech vibes',
+      preview: 'bg-gradient-to-r from-orange-500 via-yellow-400 to-green-500'
     }
   ];
 
@@ -50,6 +57,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
       theme.theme === 'pastel-cute' ? 'bg-gradient-to-br from-pink-50 to-blue-50 border border-pink-200' :
       theme.theme === 'sci-fi-pet' ? 'bg-gradient-to-br from-gray-900 to-blue-950 border border-blue-700' :
       theme.theme === 'nature-spirit' ? 'bg-gradient-to-br from-green-50 to-yellow-50 border border-green-200' :
+      theme.theme === 'electronics' ? 'bg-gradient-to-br from-gray-900 to-orange-950 border border-orange-600' :
       'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700'
     }`}>
       <div className="flex items-center gap-3 mb-6">
@@ -57,12 +65,14 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
           theme.theme === 'pastel-cute' ? 'text-pink-500' :
           theme.theme === 'sci-fi-pet' ? 'text-blue-400' :
           theme.theme === 'nature-spirit' ? 'text-green-600' :
+          theme.theme === 'electronics' ? 'text-orange-500' :
           'text-purple-500'
         }`} />
         <h3 className={`text-lg font-semibold ${
           theme.theme === 'pastel-cute' ? 'text-pink-800' :
           theme.theme === 'sci-fi-pet' ? 'text-blue-100' :
           theme.theme === 'nature-spirit' ? 'text-green-800' :
+          theme.theme === 'electronics' ? 'text-orange-100' :
           'text-gray-800 dark:text-gray-100'
         }`}>Theme Selection</h3>
       </div>
@@ -78,12 +88,14 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
                     theme.theme === 'pastel-cute' ? 'border-pink-400 bg-pink-100' :
                     theme.theme === 'sci-fi-pet' ? 'border-blue-400 bg-blue-900/30' :
                     theme.theme === 'nature-spirit' ? 'border-green-400 bg-green-100' :
+                    theme.theme === 'electronics' ? 'border-orange-400 bg-orange-900/30' :
                     'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
                   }`
                 : `${
                     theme.theme === 'pastel-cute' ? 'border-pink-200 hover:border-pink-300' :
                     theme.theme === 'sci-fi-pet' ? 'border-gray-700 hover:border-blue-500' :
                     theme.theme === 'nature-spirit' ? 'border-green-200 hover:border-green-300' :
+                    theme.theme === 'electronics' ? 'border-gray-700 hover:border-orange-500' :
                     'border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-400'
                   }`
             }`}
@@ -101,6 +113,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
                     theme.theme === 'pastel-cute' ? 'text-pink-800' :
                     theme.theme === 'sci-fi-pet' ? 'text-blue-100' :
                     theme.theme === 'nature-spirit' ? 'text-green-800' :
+                    theme.theme === 'electronics' ? 'text-orange-100' :
                     'text-gray-800 dark:text-gray-100'
                   }`}>
                     {themeOption.name}
@@ -110,6 +123,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
                       theme.theme === 'pastel-cute' ? 'bg-pink-500' :
                       theme.theme === 'sci-fi-pet' ? 'bg-blue-400' :
                       theme.theme === 'nature-spirit' ? 'bg-green-500' :
+                      theme.theme === 'electronics' ? 'bg-orange-500' :
                       'bg-purple-500'
                     }`} />
                   )}
@@ -118,6 +132,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
                   theme.theme === 'pastel-cute' ? 'text-pink-600' :
                   theme.theme === 'sci-fi-pet' ? 'text-blue-300' :
                   theme.theme === 'nature-spirit' ? 'text-green-600' :
+                  theme.theme === 'electronics' ? 'text-orange-300' :
                   'text-gray-600 dark:text-gray-400'
                 }`}>
                   {themeOption.description}
@@ -131,12 +146,14 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
                       theme.theme === 'pastel-cute' ? 'border-pink-500 bg-pink-500' :
                       theme.theme === 'sci-fi-pet' ? 'border-blue-400 bg-blue-400' :
                       theme.theme === 'nature-spirit' ? 'border-green-500 bg-green-500' :
+                      theme.theme === 'electronics' ? 'border-orange-500 bg-orange-500' :
                       'border-purple-500 bg-purple-500'
                     }`
                   : `${
                       theme.theme === 'pastel-cute' ? 'border-pink-300' :
                       theme.theme === 'sci-fi-pet' ? 'border-gray-600' :
                       theme.theme === 'nature-spirit' ? 'border-green-300' :
+                      theme.theme === 'electronics' ? 'border-gray-600' :
                       'border-gray-300 dark:border-gray-600'
                     } group-hover:border-purple-400`
               }`}>
@@ -154,12 +171,14 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
         theme.theme === 'pastel-cute' ? 'bg-gradient-to-r from-pink-50 to-blue-50 border border-pink-200' :
         theme.theme === 'sci-fi-pet' ? 'bg-gradient-to-r from-gray-800 to-blue-900 border border-blue-700' :
         theme.theme === 'nature-spirit' ? 'bg-gradient-to-r from-green-50 to-yellow-50 border border-green-200' :
+        theme.theme === 'electronics' ? 'bg-gradient-to-r from-gray-800 to-orange-900 border border-orange-600' :
         'bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
       }`}>
         <h4 className={`font-medium mb-2 ${
           theme.theme === 'pastel-cute' ? 'text-pink-800' :
           theme.theme === 'sci-fi-pet' ? 'text-blue-100' :
           theme.theme === 'nature-spirit' ? 'text-green-800' :
+          theme.theme === 'electronics' ? 'text-orange-100' :
           'text-gray-800 dark:text-gray-200'
         }`}>
           Current Theme: {theme.getThemeDisplayName(theme.theme)}
@@ -168,6 +187,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
           theme.theme === 'pastel-cute' ? 'text-pink-600' :
           theme.theme === 'sci-fi-pet' ? 'text-blue-300' :
           theme.theme === 'nature-spirit' ? 'text-green-600' :
+          theme.theme === 'electronics' ? 'text-orange-300' :
           'text-gray-600 dark:text-gray-400'
         }`}>
           {theme.theme === 'light' && "Clean and professional interface with bright backgrounds"}
@@ -175,6 +195,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
           {theme.theme === 'pastel-cute' && "Soft, playful colors with gentle gradients and rounded elements"}
           {theme.theme === 'sci-fi-pet' && "Futuristic design with glowing accents and metallic textures"}
           {theme.theme === 'nature-spirit' && "Organic, earthy tones inspired by nature and wildlife"}
+          {theme.theme === 'electronics' && "Circuit board inspired design with warm tech colors and electrical vibes"}
         </div>
       </div>
     </div>

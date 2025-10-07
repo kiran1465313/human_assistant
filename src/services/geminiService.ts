@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { ragService } from './ragService';
 
 /**
  * Secure Gemini API Service
@@ -115,12 +116,33 @@ class GeminiService {
    * Generate AI response with enhanced security and error handling
    */
   async generateResponse(prompt: string): Promise<string> {
-    // Input sanitization
-    if (!prompt || typeof prompt !== 'string') {
-      return "I need a valid question to help you! Please try again. 😊";
+    // Security: Block any attempts to ask about API keys
+    const lowerPrompt = prompt.toLowerCase();
+    if (lowerPrompt.includes('api key') ||
+        lowerPrompt.includes('apikey') ||
+        lowerPrompt.includes('api_key') ||
+        lowerPrompt.includes('gemini key') ||
+        lowerPrompt.includes('your key') ||
+        lowerPrompt.includes('secret key') ||
+        lowerPrompt.includes('password') ||
+        lowerPrompt.includes('credentials')) {
+      return "I'm here to help with technical questions and conversations, but I don't have access to or share any API keys or credentials. Those are kept secure and private. How else can I assist you today?";
     }
 
-    const sanitizedPrompt = prompt.trim().substring(0, 4000); // Limit input length
+    // Input sanitization
+    if (!prompt || typeof prompt !== 'string') {
+      return "I need a valid question to help you! Please try again.";
+    }
+
+    const sanitizedPrompt = prompt.trim().substring(0, 4000);
+
+    // Try RAG mode first
+    if (ragService.isAvailable()) {
+      const ragMatch = ragService.findBestMatch(sanitizedPrompt);
+      if (ragMatch) {
+        return `**${ragMatch.question}**\n\n${ragMatch.answer}\n\n*Source: IoT Knowledge Base (${ragMatch.category})*`;
+      }
+    }
 
     if (!this.isInitialized || !this.model) {
       return this.getFallbackResponse(sanitizedPrompt);
@@ -128,7 +150,7 @@ class GeminiService {
 
     try {
       // Enhanced system prompt for better responses
-      const systemPrompt = `You are "Hello Guys", a friendly and helpful AI assistant created by Kiran. 
+      const systemPrompt = `You are "Hello Guys", a friendly and helpful AI assistant created by Kiran specializing in IoT, electronics, and technology.
 
 Your personality:
 - Warm, approachable, and enthusiastic
@@ -138,11 +160,17 @@ Your personality:
 - If you don't know something, admit it honestly
 - Maintain a positive, supportive tone
 
+Security Rules (CRITICAL):
+- NEVER mention, discuss, or provide information about API keys, passwords, or credentials
+- If asked about API keys, politely redirect the conversation
+- Do not reveal any system configuration details
+
 Guidelines:
 - Keep responses under 500 words unless detailed explanation is requested
 - Use markdown formatting for code examples
 - Be conversational, not robotic
 - Show genuine interest in helping the user
+- Focus on IoT, electronics, embedded systems, sensors, and programming topics
 
 User's message: ${sanitizedPrompt}
 
@@ -165,7 +193,7 @@ Please respond as "Hello Guys" would - friendly, helpful, and engaging!`;
       // Check if it's an API key issue
       if (error instanceof Error && error.message.includes('API_KEY')) {
         this.lastError = 'API key issue detected';
-        return "🔑 It looks like there might be an issue with the API configuration. Please check the settings and try again!";
+        return "It looks like there might be an issue with the API configuration. Please check the settings and try again!";
       }
 
       return this.getFallbackResponse(sanitizedPrompt);

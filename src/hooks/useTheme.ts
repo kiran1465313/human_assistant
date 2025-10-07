@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export type Theme = 'light' | 'dark' | 'pastel-cute' | 'sci-fi-pet' | 'nature-spirit';
+export type Theme = 'light' | 'dark' | 'pastel-cute' | 'sci-fi-pet' | 'nature-spirit' | 'electronics';
 
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -23,7 +23,7 @@ export const useTheme = () => {
     body.classList.add('theme-transitioning');
     
     // Remove all theme classes
-    root.classList.remove('dark', 'pastel-cute', 'sci-fi-pet', 'nature-spirit');
+    root.classList.remove('dark', 'pastel-cute', 'sci-fi-pet', 'nature-spirit', 'electronics');
     
     // Add current theme class
     if (theme === 'dark') {
@@ -34,6 +34,8 @@ export const useTheme = () => {
       root.classList.add('sci-fi-pet');
     } else if (theme === 'nature-spirit') {
       root.classList.add('nature-spirit');
+    } else if (theme === 'electronics') {
+      root.classList.add('electronics');
     }
     
     // Save to localStorage
@@ -68,7 +70,8 @@ export const useTheme = () => {
         case 'dark': return 'pastel-cute';
         case 'pastel-cute': return 'sci-fi-pet';
         case 'sci-fi-pet': return 'nature-spirit';
-        case 'nature-spirit': return 'light';
+        case 'nature-spirit': return 'electronics';
+        case 'electronics': return 'light';
         default: return 'light';
       }
     });
@@ -88,6 +91,7 @@ export const useTheme = () => {
       case 'pastel-cute': return 'Pastel Cute';
       case 'sci-fi-pet': return 'Sci-Fi Pet Bot';
       case 'nature-spirit': return 'Nature Spirit';
+      case 'electronics': return 'Electronics Lab';
       default: return 'Light';
     }
   };
@@ -98,6 +102,7 @@ export const useTheme = () => {
     isPastelCute: theme === 'pastel-cute',
     isSciFiPet: theme === 'sci-fi-pet',
     isNatureSpirit: theme === 'nature-spirit',
+    isElectronics: theme === 'electronics',
     toggleTheme,
     setThemeDirectly,
     setLightTheme,
