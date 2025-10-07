@@ -83,6 +83,7 @@ function App() {
       theme.theme === 'pastel-cute' ? 'pastel-cute' :
       theme.theme === 'sci-fi-pet' ? 'sci-fi-pet' :
       theme.theme === 'nature-spirit' ? 'nature-spirit' :
+      theme.theme === 'electronics' ? 'electronics' :
       'bg-gradient-to-br from-blue-50 via-white to-purple-50'
     }`}>
       {/* Animated Theme Objects */}

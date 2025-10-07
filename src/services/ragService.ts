@@ -105,6 +105,23 @@ class RAGService {
     return bestMatch;
   }
 
+  findRelevantContext(query: string, maxResults: number = 5): RAGEntry[] {
+    if (!this.isInitialized || this.knowledgeBase.length === 0) {
+      return [];
+    }
+
+    const scoredEntries = this.knowledgeBase.map(entry => ({
+      entry,
+      score: this.calculateSimilarity(query, entry.question)
+    }));
+
+    return scoredEntries
+      .filter(item => item.score > 0.2)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, maxResults)
+      .map(item => item.entry);
+  }
+
   searchByCategory(category: string): RAGEntry[] {
     return this.knowledgeBase.filter(entry =>
       entry.category.toLowerCase().includes(category.toLowerCase())

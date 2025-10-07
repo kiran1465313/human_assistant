@@ -68,6 +68,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
         return 'bg-gradient-to-r from-gray-900/95 via-blue-950/95 to-purple-950/95';
       case 'nature-spirit':
         return 'bg-gradient-to-r from-green-50/95 via-white/95 to-blue-50/95';
+      case 'electronics':
+        return 'bg-gradient-to-r from-gray-900/95 via-orange-950/95 to-gray-900/95';
       default: // light theme
         return 'bg-gradient-to-r from-white/95 via-gray-50/95 to-white/95';
     }
@@ -83,6 +85,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
         return 'text-blue-100 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]';
       case 'nature-spirit':
         return 'text-green-800 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]';
+      case 'electronics':
+        return 'text-orange-100 drop-shadow-[0_0_10px_rgba(249,115,22,0.9)]';
       default: // light theme
         return 'text-gray-800 drop-shadow-[0_0_8px_rgba(0,0,0,0.3)]';
     }
@@ -113,6 +117,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
         return 'border-b border-blue-400/30 shadow-[0_1px_20px_rgba(59,130,246,0.2)]';
       case 'nature-spirit':
         return 'border-b border-green-200/50 shadow-[0_1px_20px_rgba(34,197,94,0.15)]';
+      case 'electronics':
+        return 'border-b border-orange-500/40 shadow-[0_1px_20px_rgba(249,115,22,0.25)]';
       default: // light theme
         return 'border-b border-gray-200/50 shadow-[0_1px_20px_rgba(0,0,0,0.1)]';
     }

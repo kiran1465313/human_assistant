@@ -136,19 +136,23 @@ class GeminiService {
 
     const sanitizedPrompt = prompt.trim().substring(0, 4000);
 
-    // Try RAG mode first
-    if (ragService.isAvailable()) {
-      const ragMatch = ragService.findBestMatch(sanitizedPrompt);
-      if (ragMatch) {
-        return `**${ragMatch.question}**\n\n${ragMatch.answer}\n\n*Source: IoT Knowledge Base (${ragMatch.category})*`;
-      }
-    }
-
     if (!this.isInitialized || !this.model) {
       return this.getFallbackResponse(sanitizedPrompt);
     }
 
     try {
+      // Gather relevant context from RAG knowledge base
+      let contextInfo = '';
+      if (ragService.isAvailable()) {
+        const relevantEntries = ragService.findRelevantContext(sanitizedPrompt, 5);
+        if (relevantEntries.length > 0) {
+          contextInfo = '\n\nREFERENCE CONTEXT (use as background knowledge only):\n';
+          relevantEntries.forEach((entry, index) => {
+            contextInfo += `\n[Reference ${index + 1}]\nCategory: ${entry.category}\nQ: ${entry.question}\nA: ${entry.answer}\n`;
+          });
+        }
+      }
+
       // Enhanced system prompt for better responses
       const systemPrompt = `You are "Hello Guys", a friendly and helpful AI assistant created by Kiran specializing in IoT, electronics, and technology.
 
@@ -171,6 +175,15 @@ Guidelines:
 - Be conversational, not robotic
 - Show genuine interest in helping the user
 - Focus on IoT, electronics, embedded systems, sensors, and programming topics
+
+IMPORTANT RAG INSTRUCTIONS:
+- If reference context is provided below, use it as BACKGROUND KNOWLEDGE only
+- DO NOT copy or repeat the Q&A pairs verbatim
+- Synthesize information from references with your own knowledge and web search capabilities
+- Provide comprehensive, original answers based on your understanding
+- DO NOT cite sources unless explicitly asked
+- If references seem relevant, incorporate their concepts naturally into your response
+- Always provide the most accurate and up-to-date information available${contextInfo}
 
 User's message: ${sanitizedPrompt}
 
