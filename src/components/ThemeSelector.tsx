@@ -4,9 +4,10 @@ import { Theme, useTheme } from '../hooks/useTheme';
 
 interface ThemeSelectorProps {
   theme: ReturnType<typeof useTheme>;
+  onSecretClick?: () => void;
 }
 
-export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
+export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme, onSecretClick }) => {
   const themes: { value: Theme; name: string; icon: React.ReactNode; description: string; preview: string }[] = [
     {
       value: 'light',
@@ -68,7 +69,9 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ theme }) => {
           theme.theme === 'electronics' ? 'text-orange-500' :
           'text-purple-500'
         }`} />
-        <h3 className={`text-lg font-semibold ${
+        <h3
+          onClick={onSecretClick}
+          className={`text-lg font-semibold select-none ${
           theme.theme === 'pastel-cute' ? 'text-pink-800' :
           theme.theme === 'sci-fi-pet' ? 'text-blue-100' :
           theme.theme === 'nature-spirit' ? 'text-green-800' :

@@ -38,6 +38,34 @@ class RAGService {
     }
   }
 
+  loadAdditionalCSV(csvContent: string) {
+    try {
+      const lines = csvContent.split('\n');
+      let addedCount = 0;
+
+      lines.slice(1).forEach((line, index) => {
+        if (line.trim()) {
+          const match = line.match(/^(\d+),([^,]+),"?([^"]+)"?,"?(.+)"?$/);
+          if (match) {
+            this.knowledgeBase.push({
+              id: `custom_${Date.now()}_${index}`,
+              category: match[2],
+              question: match[3],
+              answer: match[4]
+            });
+            addedCount++;
+          }
+        }
+      });
+
+      console.log(`Added ${addedCount} entries from custom CSV`);
+      return { success: true, count: addedCount };
+    } catch (error) {
+      console.error('Failed to load additional CSV:', error);
+      return { success: false, count: 0, error: String(error) };
+    }
+  }
+
   private calculateSimilarity(str1: string, str2: string): number {
     const s1 = str1.toLowerCase();
     const s2 = str2.toLowerCase();
