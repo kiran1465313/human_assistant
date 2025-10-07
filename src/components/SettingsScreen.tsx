@@ -4,7 +4,9 @@ import { VoiceSettings } from './VoiceSettings';
 import { HiddenAPISettings } from './HiddenAPISettings';
 import { ThemeSelector } from './ThemeSelector';
 import { DataManager } from './DataManager';
+import { ModelSelector } from './ModelSelector';
 import { useTheme } from '../hooks/useTheme';
+import { useModel } from '../hooks/useModel';
 
 interface SettingsScreenProps {
   voiceChat?: any;
@@ -19,6 +21,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   onClearAllData,
   onExportData
 }) => {
+  const modelManager = useModel();
   const [clickCount, setClickCount] = useState(0);
   const [showAPISettings, setShowAPISettings] = useState(false);
   const [resetTimer, setResetTimer] = useState<NodeJS.Timeout | null>(null);
@@ -125,6 +128,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <ThemeSelector
             theme={theme}
             onSecretClick={handleSecretClick}
+          />
+
+          {/* Model Selection */}
+          <ModelSelector
+            selectedModel={modelManager.selectedModel}
+            onModelChange={modelManager.changeModel}
           />
 
           {/* Data Manager */}
